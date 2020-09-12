@@ -11,8 +11,8 @@ public class ExamBuilder {
     private Teacher teacher;
     private List<Question> questions;
     private String timer;
-    private LocalDateTime theBeginning;
-    private LocalDateTime theEnd;
+    private String theBeginning;
+    private String theEnd;
     public static ExamBuilder anExam(){
         return new ExamBuilder();
     }
@@ -32,12 +32,12 @@ public class ExamBuilder {
         return this;
     }
 
-    public ExamBuilder WithTheBeginning(LocalDateTime theBeginning) {
+    public ExamBuilder WithTheBeginning(String theBeginning) {
         this.theBeginning=theBeginning;
         return this;
     }
 
-    public ExamBuilder WithTheEnd(LocalDateTime theEnd) {
+    public ExamBuilder WithTheEnd(String theEnd) {
         this.theEnd=theEnd;
         return this;
     }

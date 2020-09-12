@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -29,9 +28,8 @@ public class Controller {
     private ClassificationService classificationService;
     @Autowired
     private AdminService adminService;
-
-    public Controller() {
-    }
+    @Autowired
+    private ExamService examService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getHomePage() {
@@ -44,32 +42,21 @@ public class Controller {
         return "signIn";
     }
 
-    @RequestMapping(value = "/editByUsername", method = RequestMethod.GET)
-    public String showEditUserPage(Model model) {
-        model.addAttribute("user", new User());
-
-        return ("editUser");
-    }
-
-    @RequestMapping(value = "/editProcess?", method = RequestMethod.GET)
-    public String edit(@ModelAttribute("oldUser") User oldUser, @ModelAttribute("user") User user,
+    @RequestMapping(value = "/editProcess", method = RequestMethod.GET)
+    public String edit(@ModelAttribute("user") User user,
                        Model model) {
-        String username = oldUser.getUsername();
-        if (username.equals("")) {
-            model.addAttribute("errorMsg", "username should be filled.");
-            return ("error");
-        }
-
-
         try {
-            userService.editByUsername(user, username);
+            userService.update(user);
+            User user1 = userService.findById(user.getId());
+            Admin admin = userService.getAdmin(user1);
+            model.addAttribute("admin", admin);
+            model.addAttribute("students", studentService.showAllStudent(admin));
+            model.addAttribute("teachers", teacherService.showAllTeachers(admin));
+            return ("welcome");
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errorMsg", "user is:" + user.toString());
             return ("error");
         }
-        return ("welcome");
-
-
     }
 
     @RequestMapping(value = "/signInProcess", method = RequestMethod.POST)
@@ -81,7 +68,7 @@ public class Controller {
             Admin admin = adminService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
             model.addAttribute("students", studentService.showAllStudent(admin));
             model.addAttribute("teachers", teacherService.showAllTeachers(admin));
-            model.addAttribute("admin",admin);
+            model.addAttribute("admin", admin);
             return ("welcome");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -184,16 +171,25 @@ public class Controller {
     }
 
     @RequestMapping(value = "/addNewStudent", method = RequestMethod.GET)
-    public String showAddNewStudent(Model model) {
+    public String showAddNewStudent(Model model, @RequestParam("id") int id) {
+        try {
+            model.addAttribute("admin", userService.findById(id));
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
         model.addAttribute("student", new Student());
         return ("addNewStudent");
     }
 
     @RequestMapping(value = "/addNewStudentProcess", method = RequestMethod.POST)
-    public String addNewStudent(@ModelAttribute("student") Student student,
+    public String addNewStudent(@ModelAttribute("student") Student student, @ModelAttribute("admin") Admin adminUser,
                                 Model model) {
         try {
+            student.setAdmin(adminUser);
             studentService.registerNewStudent(student);
+            model.addAttribute("students", studentService.showAllStudent(adminUser));
+            model.addAttribute("teachers", teacherService.showAllTeachers(adminUser));
             return ("welcome");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -203,20 +199,26 @@ public class Controller {
     }
 
     @RequestMapping(value = "/addNewTeacher", method = RequestMethod.GET)
-    public String showAddNewTeacher(Model model) {
+    public String showAddNewTeacher(Model model, @RequestParam("id") int id) {
+        try {
+            model.addAttribute("admin", userService.findById(id));
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
         model.addAttribute("teacher", new Teacher());
         return ("addNewTeacher");
     }
 
     @RequestMapping(value = "/addNewTeacherProcess", method = RequestMethod.POST)
-    public String addNewTeacher(@ModelAttribute("teacher") Teacher teacher,
+    public String addNewTeacher(@ModelAttribute("teacher") Teacher teacher, @ModelAttribute("admin") Admin adminUser,
                                 Model model) {
         try {
             teacher.setEnabled(true);
+            teacher.setAdmin(adminUser);
             teacherService.registerNewTeacher(teacher);
-            Admin admin = (Admin) model.getAttribute("admin");
-            model.addAttribute("students", studentService.showAllStudent(admin));
-            model.addAttribute("teachers", teacherService.showAllTeachers(admin));
+            model.addAttribute("students", studentService.showAllStudent(adminUser));
+            model.addAttribute("teachers", teacherService.showAllTeachers(adminUser));
             return ("welcome");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -225,13 +227,11 @@ public class Controller {
 
     }
 
-    @RequestMapping(value = "/deleteByUsername/{input}", method = RequestMethod.GET)
-    public String deleteByUsername(Model model, @PathVariable String input) {
+    @RequestMapping(value = "/deleteByUsername", method = RequestMethod.GET)
+    public String deleteByUsername(Model model, @RequestParam("id") int id) {
         try {
-            int index=input.indexOf('%');
-            int id=Integer.parseInt(input.substring(0,index));
-            int id2=Integer.parseInt(input.substring(index+1));
-            Admin admin=adminService.findById(id2);
+            User user = userService.findById(id);
+            Admin admin = userService.getAdmin(user);
             userService.deleteById(id);
             model.addAttribute("students", studentService.showAllStudent(admin));
             model.addAttribute("teachers", teacherService.showAllTeachers(admin));
@@ -240,69 +240,201 @@ public class Controller {
             model.addAttribute("errorMsg", e.getMessage());
             return ("error");
         }
-
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public String search(Model model) {
+    public String search(Model model, @RequestParam("id") int id) {
         model.addAttribute("user", new User());
+        try {
+            model.addAttribute("admin", adminService.findById(id));
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
         return ("search");
+
     }
 
 
     @RequestMapping(value = "/searchProcess", method = RequestMethod.POST)
-    public String search(@ModelAttribute("user") User user,
-                         Model model) {
-        if (user.getAuthority().equals("student")) {
-            List<Student> students = studentService.findMaxMatch(user.getName(), user.getFamily(), user.getUsername());
-            model.addAttribute("students", students);
-            return ("studentsResultSearch");
-        } else if (user.getAuthority().equals("teacher")) {
-            List<Teacher> teachers = teacherService.findMaxMatch(user.getName(), user.getFamily(), user.getUsername());
-            model.addAttribute("teachers", teachers);
-            return ("teacherResultSearch");
-        } else {
-            List<Student> students = studentService.findMaxMatch(user.getName(), user.getFamily(), user.getUsername());
-            List<Teacher> teachers = teacherService.findMaxMatch(user.getName(), user.getFamily(), user.getUsername());
-            model.addAttribute("students", students);
-            model.addAttribute("teachers", teachers);
+    public String showSearchResult(@ModelAttribute("user") User user, @RequestParam("adminId") int adminId,
+                                   Model model) {
+        try {
+            Admin admin = adminService.findById(adminId);
+            List<Student> students = studentService.findMaxMatch(user.getName(), user.getFamily(), user.getUsername(), admin);
+            List<Teacher> teachers = teacherService.findMaxMatch(user.getName(), user.getFamily(), user.getUsername(), admin);
+            List<User> users = new ArrayList<>();
+            for (int i = 0; i < students.size(); i++) {
+                User studentUser = students.get(i);
+                users.add(studentUser);
+            }
+            for (int i = 0; i < teachers.size(); i++) {
+                User teacherUser = teachers.get(i);
+                users.add(teacherUser);
+            }
+            model.addAttribute("users", users);
+            model.addAttribute("admin", admin);
             return ("usersResultSearch");
+
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", "admin id did not found");
+            return "error";
         }
+
+
     }
 
 
     @RequestMapping(value = "/addNewCourse", method = RequestMethod.GET)
-    public String showAddNewCourse(Model model) {
-        model.addAttribute("course", new Course());
-        model.addAttribute("classifications", classificationService.findAll());
-        return ("addNewCourse");
+    public String showAddNewCourse(Model model, @RequestParam("id") int id) {
+        try {
+            model.addAttribute("course", new Course());
+            model.addAttribute("classifications", classificationService.findAll());
+            model.addAttribute("adminId", id);
+            return ("addNewCourse");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+
     }
 
     @RequestMapping(value = "/addNewCourseProcess", method = RequestMethod.POST)
-    public String addNewCourse(@ModelAttribute("course") Course course,
+    public String addNewCourse(@Valid @ModelAttribute("course") Course course, BindingResult br, @RequestParam("id") int id,
                                Model model) {
-        String ermsg = "";
-        if (course.getNumber() == 0) {
-            ermsg = "number should be filled.";
-        } else if (Objects.equals("", course.getTitle())) {
-            ermsg = "title should be filled";
-        } else {
-            try {
-                Classification classification = new Classification();
-                classification.setValue(course.getEmbeddableClassification());
-                classificationService.addNewClassification(classification);
-                course.setClassification(classificationService.findByValue(course.getEmbeddableClassification()));
-                courseService.addNewCourse(course);
-                Admin admin = (Admin) model.getAttribute("admin");
-                model.addAttribute("students", studentService.showAllStudent(admin));
-                model.addAttribute("teachers", teacherService.showAllTeachers(admin));
-                return ("welcome");
-            } catch (Exception e) {
-                model.addAttribute("errorMsg", e.getMessage());
-                return ("error");
-            }
+
+        if (br.hasErrors()) {
+            model.addAttribute("course", course);
+            model.addAttribute("classifications", classificationService.findAll());
+            model.addAttribute("adminId", id);
+            return "addNewCourse";
         }
-        model.addAttribute("errorMsg", ermsg);
-        return ("error");
+
+        try {
+
+            Admin admin = adminService.findById(id);
+            model.addAttribute("admin", admin);
+            Classification classification = classificationService.findByValue(course.getEmbeddableClassification());
+            course.setAdmin(admin);
+            course.setClassification(classification);
+            courseService.addNewCourse(course);
+            model.addAttribute("courses", courseService.showAllCourses(admin));
+            return ("course");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+
+    }
+
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public String edit(Model model, @RequestParam("id") int id) {
+        try {
+            User user = userService.findById(id);
+            model.addAttribute("user", user);
+            return "editUser";
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+    }
+
+    @RequestMapping(value = "/welcome", method = RequestMethod.GET)
+    public String backToWelcome(@RequestParam("id") int id,
+                                Model model) {
+        try {
+            Admin adminUser = adminService.findById(id);
+            model.addAttribute("admin", adminUser);
+            model.addAttribute("students", studentService.showAllStudent(adminUser));
+            model.addAttribute("teachers", teacherService.showAllTeachers(adminUser));
+            return ("welcome");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+
+    }
+
+    @RequestMapping(value = "/courses", method = RequestMethod.GET)
+    public String showCourses(@RequestParam("id") int id, @RequestParam("number") int number, @RequestParam("status") int status,
+                              Model model) {
+        try {
+            Admin adminUser = adminService.findById(id);
+            model.addAttribute("adminId", id);
+            model.addAttribute("courses", courseService.showAllCourses(adminUser));
+            if (status != 0) {
+                Course course = courseService.findByNumber(number);
+                if (status == 1) {
+                    model.addAttribute("students", studentService.showAllStudentsByCourse(course));
+                } else if (status == 2) {
+                    model.addAttribute("teachers", teacherService.showAllTeachersByCourse(course));
+                } else if (status == 3) {
+                    model.addAttribute("exams", examService.showAllByCourse(course));
+                }
+            }
+            return ("course");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+
+    }
+
+    @RequestMapping(value = "/classifications", method = RequestMethod.GET)
+    public String showClassifications(@RequestParam("id") int id,
+                                      Model model) {
+        model.addAttribute("adminId", id);
+        model.addAttribute("classifications", classificationService.findAll());
+        model.addAttribute("classification", new Classification());
+        return ("classifications");
+    }
+
+    @RequestMapping(value = "/addClassificationsProcess", method = RequestMethod.POST)
+    public String addClassifications(@RequestParam("id") int id, @Valid@ModelAttribute Classification classification, BindingResult br,Model model) {
+        try {
+            model.addAttribute("adminId", id);
+            if(br.hasErrors()){
+                model.addAttribute("classifications", classificationService.findAll());
+                return ("classifications");
+            }
+            model.addAttribute("classification", new Classification());
+            classification.setId(0);
+            classificationService.addNewClassification(classification);
+            model.addAttribute("classifications", classificationService.findAll());
+            return ("classifications");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+
+    }
+
+    @RequestMapping(value = "/editClassificationsProcess", method = RequestMethod.GET)
+    public String editClassifications(@RequestParam("id") int id, @RequestParam("number") int number, @RequestParam("value") String value, Model model) {
+        try {
+            model.addAttribute("adminId", id);
+            classificationService.update(number,value);
+            model.addAttribute("classifications", classificationService.findAll());
+            model.addAttribute("classification", new Classification());
+            return ("classifications");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+
+    }
+
+    @RequestMapping(value = "/addStudentOrTeacherToCourse", method = RequestMethod.GET)
+    public String showAddNewPeopleToCourse(Model model, @RequestParam("id") int id,@RequestParam("number") int number) {
+        try {
+            model.addAttribute("adminId", id);
+            Admin admin=adminService.findById(id);
+            model.addAttribute("students",studentService.showAllStudent(admin));
+            model.addAttribute("teachers",teacherService.showAllTeachers(admin));
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+        return ("addNewPeopleToCourse");
     }
 }

@@ -64,7 +64,7 @@
 
 </head>
 <body>
-<a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
+<a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/welcome?id=${admin.id}">Welcome</a>
 
 <div>
     <table id="demo" class="main">
@@ -72,13 +72,15 @@
             <th>Username</th>
             <th>name</th>
             <th>family</th>
-            <th>enabled</th>
+            <th>authority</th>
+            <th>status</th>
         </tr>
         <c:forEach var="std" items="${users}">
             <tr>
                 <td>${std.username}</td>
                 <td>${std.name}</td>
                 <td>${std.family}</td>
+                <td>${std.authority}</td>
                 <td style="color: blue">${std.enabled}</td>
             </tr>
         </c:forEach>

@@ -6,6 +6,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <style>
         body {
             alignment: left;
@@ -20,19 +21,6 @@
             position: relative;
         }
 
-
-        div {
-            position: absolute;
-            top: 90%;
-            width: 100%;
-            text-align: center;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            cursor: pointer;
-            min-width: fit-content;
-            border-radius: 12px;
-        }
 
         button {
             background-color: blue;
@@ -57,95 +45,92 @@
             border: hidden;
         }
 
+        td.aligner {
+            display: flex;
+            align-items: center;
+        }
+
 
         /* Change styles for span and cancel button on extra small screens */
 
     </style>
-    <script>
-        function myFunction(user) {
-
-            if (user.enabled = true) {
-                user.enabled = false;
-            } else
-                user.enabled = true;
-        }
-
-    </script>
 </head>
 <body>
 <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
-
-<div>
-    <table id="demo" class="main">
+<a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/courses?id=${admin.id}&number=0&status=0">Courses</a>
+<a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/classifications?id=${admin.id}">Classifications</a>
+<table id="demo" class="main">
+    <tr>
+        <th>Username</th>
+        <th>name</th>
+        <th>family</th>
+        <th>authority</th>
+        <th>status</th>
+        <th>edit</th>
+        <th>delete</th>
+    </tr>
+    <c:forEach var="std" items="${students}">
         <tr>
-            <th>Username</th>
-            <th>name</th>
-            <th>family</th>
-            <th>authority</th>
-            <th>status</th>
-            <th>edit</th>
-            <th>delete</th>
-        </tr>
-        <c:forEach var="std" items="${students}">
-            <tr>
-                <td>${std.username}</td>
-                <td>${std.name}</td>
-                <td>${std.family}</td>
-                <td>student</td>
-                <td>< style="color: blue">${std.enabled}</td>
-                <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/editStudent/${std.id}%${admin.id}" style="color: blue">edit</a></td>
-                <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/deleteByUsername/${std.id}%${admin.id}" style="color: blue">delete</a></td>
+            <td>${std.username}</td>
+            <td>${std.name}</td>
+            <td>${std.family}</td>
+            <td>student</td>
+            <td class="aligner">
 
-            </tr>
-        </c:forEach>
-        <c:forEach var="std" items="${teachers}">
-            <tr>
-                <td>${std.username}</td>
-                <td>${std.name}</td>
-                <td>${std.family}</td>
-                <td>teacher</td>
-                <td>< style="color: blue">${std.enabled}</td>
-                <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/editStudent/${std.id}%${admin.id}" style="color: blue">edit</a></td>
-                <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/deleteByUsername/${std.id}%${admin.id}" style="color: blue">delete</a></td>
-            </tr>
-        </c:forEach>
-    </table>
-    <br/>
-    <table>
-        <tr class="m">
-            <td class="m">
-                <form action="editByUsername">
-                    <button type="submit">Edit By Username</button>
-                </form>
+                <ul class="fa-ul">
+                    <li><span class="fa-li">
+                            <c:if test="${std.enabled == true}"><i class="fas fa-check-square"></i></c:if>
+                            <c:if test="${std.enabled == false}"><i class="fas fa-square"></i></c:if>
+                        </span></li>
+                </ul>
             </td>
-            <td class="m">
-                <form action="addNewStudent">
-                    <button type="submit">Add New Student</button>
-                </form>
-            </td>
-            <td class="m">
-                <form action="addNewTeacher">
-                    <button type="submit">Add New teacher</button>
-                </form>
-            </td>
-            <td class="m">
-                <form action="deleteByUsername">
-                    <button type="submit">Delete By Username</button>
-                </form>
-            </td>
-            <td class="m">
-                <form action="search">
-                    <button type="submit">Search</button>
-                </form>
-            </td>
-            <td class="m">
-                <form action="addNewCourse">
-                    <button type="submit">Course</button>
-                </form>
-            </td>
+            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/edit?id=${std.id}"
+                   style="color: blue">edit</a></td>
+            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/deleteByUsername?id=${std.id}"
+                   style="color: blue">delete</a></td>
+
         </tr>
-    </table>
-</div>
+    </c:forEach>
+    <c:forEach var="std" items="${teachers}">
+        <tr>
+            <td>${std.username}</td>
+            <td>${std.name}</td>
+            <td>${std.family}</td>
+            <td>teacher</td>
+            <td class="aligner">
+
+                <ul class="fa-ul">
+                    <li><span class="fa-li">
+                            <c:if test="${std.enabled == true}"><i class="fas fa-check-square"></i></c:if>
+                            <c:if test="${std.enabled == false}"><i class="fas fa-square"></i></c:if>
+                        </span></li>
+                </ul>
+
+            </td>
+            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/edit?id=${std.id}"
+                   style="color: blue">edit</a></td>
+            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/deleteByUsername?id=${std.id}"
+                   style="color: blue">delete</a></td>
+        </tr>
+    </c:forEach>
+</table>
+
+<br/>
+<table>
+    <tr class="m">
+        <td class="m">
+            <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addNewStudent?id=${admin.id}">Add
+                New Student</a>
+        </td>
+        <td class="m">
+            <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addNewTeacher?id=${admin.id}">Add
+                New teacher</a>
+        </td>
+        <td class="m">
+            <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/search?id=${admin.id}">Search</a>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
 

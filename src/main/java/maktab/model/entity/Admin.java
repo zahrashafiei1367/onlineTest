@@ -16,6 +16,7 @@ public class Admin extends User {
     private List<Course> courses;
 
     public Admin() {
+        setAuthority("admin");
     }
 
     public String getSchoolName() {

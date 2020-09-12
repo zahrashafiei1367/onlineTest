@@ -1,15 +1,8 @@
 package maktab.model.entity;
 
-import com.mysql.cj.protocol.x.XMessage;
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
 @Entity
 public class Exam {
     @Id
@@ -26,9 +19,9 @@ public class Exam {
     @Pattern(regexp="^([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:hh:mm:ss")
     private String timer;
     @Pattern(regexp="^[0-2]{1}[0-9]{3}/(0?[1-9]|1[0-2])/([0]?[1-9]|[1-2]?[1-9]|3?[0-1]) ([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:yy/MM/dd hh:mm:ss")
-    private LocalDateTime theBeginning;
+    private String theBeginning;
     @Pattern(regexp="^[0-2]{1}[0-9]{3}/(0?[1-9]|1[0-2])/([0]?[1-9]|[1-2]?[1-9]|3?[0-1]) ([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:yy/MM/dd hh:mm:ss")
-    private LocalDateTime theEnd;
+    private String theEnd;
     //private Map<Student,List<Result>> studentResultMap;
 
 
@@ -75,19 +68,19 @@ public class Exam {
         this.timer = timer;
     }
 
-    public LocalDateTime getTheBeginning() {
+    public String getTheBeginning() {
         return theBeginning;
     }
 
-    public void setTheBeginning(LocalDateTime theBeginning) {
+    public void setTheBeginning(String theBeginning) {
         this.theBeginning = theBeginning;
     }
 
-    public LocalDateTime getTheEnd() {
+    public String getTheEnd() {
         return theEnd;
     }
 
-    public void setTheEnd(LocalDateTime theEnd) {
+    public void setTheEnd(String theEnd) {
         this.theEnd = theEnd;
     }
 }

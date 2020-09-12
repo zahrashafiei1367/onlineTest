@@ -1,19 +1,18 @@
 package maktab.service;
 
-import maktab.model.dao.StudentSpecifications;
 import maktab.model.dao.TeacherDao;
 import maktab.model.dao.TeacherSpecification;
 import maktab.model.entity.Admin;
+import maktab.model.entity.Course;
 import maktab.model.entity.Student;
 import maktab.model.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,7 +30,7 @@ public class TeacherService {
     }
 
     @Transactional
-    public Teacher findByUsernameAndPassword(String username,String password) throws Exception {
+    public Teacher findByUsernameAndPassword(String username, String password) throws Exception {
         Optional<Teacher> found = teacherDao.findByUsername(username);
         if (found.isPresent()) {
             found = teacherDao.findByUsernameAndPassword(username, password);
@@ -43,13 +42,25 @@ public class TeacherService {
     }
 
     @Transactional(readOnly = true)
-    public List<Teacher> showAllTeachers(Admin admin){
+    public List<Teacher> showAllTeachers(Admin admin) {
         return teacherDao.findByAdmin(admin);
     }
 
     public List<Teacher> findMaxMatch(String name,
                                       String family,
-                                      String username){
-        return teacherDao.findAll(TeacherSpecification.findMaxMatch(name, family,username));
+                                      String username, Admin admin) {
+        List<Teacher> teachers = teacherDao.findAll(TeacherSpecification.findMaxMatch(name, family, username));
+        List<Teacher> adminTeachers = new ArrayList<>();
+        for (int i = 0; i < teachers.size(); i++) {
+            Teacher teacher = teachers.get(i);
+            if (teacher.getAdmin().getId()== admin.getId())
+                adminTeachers.add(teacher);
+        }
+        return adminTeachers;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Teacher> showAllTeachersByCourse(Course course) {
+        return teacherDao.findByCourses(course);
     }
 }

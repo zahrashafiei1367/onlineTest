@@ -16,6 +16,7 @@ public class Teacher extends User {
     @JoinColumn(name = "admin_id")
     private Admin admin;
     public Teacher() {
+        setAuthority("teacher");
     }
 
     public Admin getAdmin() {

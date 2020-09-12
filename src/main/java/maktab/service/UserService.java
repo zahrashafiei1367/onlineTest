@@ -3,6 +3,7 @@ package maktab.service;
 import maktab.model.dao.TeacherSpecification;
 import maktab.model.dao.UserDao;
 import maktab.model.dao.UserSpecification;
+import maktab.model.entity.Admin;
 import maktab.model.entity.Student;
 import maktab.model.entity.Teacher;
 import maktab.model.entity.User;
@@ -63,22 +64,9 @@ public class UserService {
     }
 
     @Transactional
-    public void editByUsername(User user,String username) throws Exception {
-        Optional<User> found = userDao.findByUsername(username);
-        if(found.isPresent()){
-            if(user.getUsername().equals(""))
-                user.setUsername(found.get().getUsername());
-            if(user.getName().equals(""))
-                user.setName(found.get().getName());
-            if(user.getFamily().equals(""))
-                user.setFamily(found.get().getFamily());
-            if(user.getPassword().equals(""))
-                user.setPassword(found.get().getPassword());
-            if(user.getAuthority().equals(""))
-                user.setAuthority(found.get().getAuthority());
-            userDao.update(username,user.getUsername(),user.getName(),user.getFamily(),user.getPassword(),user.getEnabled());
-        }
-        else throw new Exception("user with this username is not exist");
+    public void update(User user) throws Exception
+    {
+            userDao.update(user.getId(),user.getUsername(),user.getName(),user.getFamily(),user.getPassword(),user.getEnabled());
     }
 
     @Transactional
@@ -93,7 +81,23 @@ public class UserService {
     @Transactional
     public List<User> findMaxMatch(String name,
                                    String family,
-                                   String username){
-        return userDao.findAll(UserSpecification.findMaxMatch(name, family,username));
+                                   String username,Admin admin){
+        return userDao.findAll(UserSpecification.findMaxMatch(name, family, username));
+
+
+    }
+
+    public Admin getAdmin(User user) throws Exception {
+        if(user.getAuthority().equals("teacher")){
+            Teacher teacher=(Teacher)user;
+            return teacher.getAdmin();
+        }
+        else if(user.getAuthority().equals("student")){
+            Student student=(Student)user;
+            return student.getAdmin();
+        }
+        else
+            throw new Exception("user is admin itself");
+
     }
 }

@@ -47,7 +47,7 @@
             opacity: 0.8;
         }
         div{
-            text-align: center;
+            text-align: left;
         }
         h{
             color: red;
@@ -73,16 +73,16 @@
 <body>
 <div>
 
-    <form:form modelAttribute="student" name="myForm" onsubmit="return myFunction()" action="addNewStudentProcess"  method="POST">
-        <label><b>Name</b></label>
+    <form:form modelAttribute="student" name="myForm" onsubmit="return myFunction()" action="addNewStudentProcess?id=${admin.id}"  method="POST">
+        <label><b>Name</b></label><br/>
         <form:input path="name" type="text" placeholder="Enter Your Name"/><br/>
-        <label><b>Family</b></label>
+        <label><b>Family</b></label><br/>
         <form:input path="family" type="text" placeholder="Enter Your Family"/><br/>
-        <label><b>Username</b></label>
+        <label><b>Username</b></label><br/>
         <form:input path="username" name="un" type="text"  placeholder="Enter Your Email Address" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"/><br/>
-        <label><b>Password</b></label>
+        <label><b>Password</b></label><br/>
         <input id="psw" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" placeholder="Enter Password"/><br/>
-        <label><b>Confirm Password</b></label>
+        <label><b>Confirm Password</b></label><br/>
         <input id="psw2" type="password" placeholder="Confirm Password"/><br/>
         <form:hidden path="password" id="pas"></form:hidden>
         <button type="submit">Add</button><br/>

@@ -1,6 +1,7 @@
 package maktab.model.dao;
 
 import maktab.model.entity.Admin;
+import maktab.model.entity.Course;
 import maktab.model.entity.Student;
 import maktab.model.entity.Teacher;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,4 +17,5 @@ import java.util.Optional;
 public interface TeacherDao extends UserBaseDao<Teacher>, JpaSpecificationExecutor<Teacher> {
     Teacher save(Teacher t);
     List<Teacher> findByAdmin(Admin admin);
+    List<Teacher> findByCourses(Course course);
 }

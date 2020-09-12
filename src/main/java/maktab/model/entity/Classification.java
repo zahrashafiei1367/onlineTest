@@ -9,7 +9,7 @@ public class Classification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-    @Pattern(regexp = "^[a-zA-Z]+$" , message="value should be filled.")
+    @Pattern(regexp = "^[a-zA-Z]+$" , message="*value should be filled.only a to z and A to Z is acceptable")
     String value;
     @OneToMany(mappedBy = "classification")
     List<Course> courses;

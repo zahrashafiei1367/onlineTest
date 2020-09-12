@@ -49,11 +49,16 @@
         }
 
         div {
-            text-align: center;
+            text-align: left;
         }
 
         h {
             color: red;
+        }
+
+        .error {
+            font-size: small;
+            color: red
         }
 
 
@@ -63,46 +68,47 @@
     <script>
         function myFunction() {
             var ele = document.getElementsByName('rad');
-            var i;
-            for (i = 0; i < ele.length; i++) {
-                if (ele[i].checked()) {
-                    document.getElementById("cls").value = ele[i].value();
-                    return true;
-                }
-            }
-            var cls = prompt("Please enter your new Classification:", "java");
-            if (cls == null || cls == "") {
-                alert("you should choose an existing classification or enter a new one");
-                return false;
-            } else {
-                document.getElementById("cls").value = cls;
+            if(ele.length>0)
+                ele[0].click();}
+    function setClassfication(){
+        var ele = document.getElementsByName('rad');
+        for( i=0;i<ele.length;i++){
+            if(ele[i].checked){
+                document.getElementById("classification").value=ele[i].value;
                 return true;
             }
+
         }
+    }
 
     </script>
 </head>
-<body>
+<body onload="myFunction()">
 <div>
 
-    <form:form modelAttribute="course" name="myForm" onsubmit="return myFunction()" action="addNewCourseProcess"
-               method="POST">
-        <label><b>Number</b></label>
-        <form:input path="number" type="number" pattern="[0-9]" placeholder="Enter unique number of course"/><br/>
-        <label><b>Caption</b></label>
-        <form:input path="caption" name="un" type="text" placeholder="Enter title of the course"
-                    pattern=".{,20}$"/><br/>
-        <label><b>Classifications:</b></label>
+    <form:form modelAttribute="course" name="myForm" onsubmit="return setClassfication()"  action="addNewCourseProcess?id=${adminId}" method="POST">
+            <label><b>Number</b></label><br/>
+            <form:input path="number" type="text" placeholder="Enter unique number of course"/><form:errors path="number" cssClass="error"/><br/>
+            <label><b>Caption</b></label><br/>
+            <form:input path="caption" type="text" placeholder="Enter Your caption"/><form:errors path="caption" cssClass="error"/><br/>
+            <label><b>Title</b></label><br/>
+            <form:input path="title" type="text" placeholder="Enter title of the course"/><br/>
+        <label><b>start class from day:</b></label><br/>
+        <form:input path="theBeginning" type="text" placeholder="Enter date of starting:yyyy/mm/dd" id="bt"/><form:errors path="theBeginning" cssClass="error"/><br/>
+        <label><b>class will be finished at:</b></label><br/>
+        <form:input path="theEnd" type="text" placeholder="Enter date of finishing:yyyy/mm/dd" id="et"/><form:errors path="theEnd" cssClass="error"/><br/>
+        <form:hidden path="embeddableClassification" id="classification"/>
+        <lable style="font-size: smaller">Classification: </lable>
         <c:forEach var="cls" items="${classifications}">
             <tr>
                 <td>${cls.value}</td>
                 <td><input type="radio" name="rad" value="${cls.value}"/></td>
             </tr>
         </c:forEach><br/>
-        <form:hidden path="embeddableClassification" id="cls"/>
         <button type="submit">AddCourse</button>
+        </form:form>
+
         <br/>
-    </form:form>
 </div>
 </body>
 </html>

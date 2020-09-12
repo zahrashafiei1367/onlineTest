@@ -20,6 +20,7 @@ public class Student extends User {
     private Admin admin;
 
     public Student() {
+        setAuthority("student");
     }
 
 

@@ -20,8 +20,8 @@ public interface UserDao extends UserBaseDao<User>, JpaSpecificationExecutor<Use
 
     User save(User u);
     @Modifying
-    @Query("update User set username=:newUsername,name=:newName ,family=:newFamily,password=:newPass,enabled=:newEnabled where username=:username")
-    void update(@Param("username") String username, @Param("newUsername") String newUsername,@Param("newName") String name,@Param("newFamily") String family,@Param("newPass") String pass,@Param("newEnabled") Boolean enable);
+    @Query("update User set username=:newUsername,name=:newName ,family=:newFamily,password=:newPass,enabled=:newEnabled where id=:id")
+    void update(@Param("id") int id, @Param("newUsername") String newUsername,@Param("newName") String newName,@Param("newFamily") String newFamily,@Param("newPass") String newPass,@Param("newEnabled") Boolean newEnabled);
 }
 
 
