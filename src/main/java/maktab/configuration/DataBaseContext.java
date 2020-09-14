@@ -23,7 +23,7 @@ import java.util.Properties;
 public class DataBaseContext {
 
     @Bean
-    public DriverManagerDataSource dataSource(Environment env){
+    public DriverManagerDataSource dataSource(Environment env) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
         dataSource.setUrl(env.getProperty("jdbc.url"));
@@ -33,9 +33,9 @@ public class DataBaseContext {
     }
 
     @Bean
-    public Properties hibernateProperties(Environment env){
+    public Properties hibernateProperties(Environment env) {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect",env.getProperty("hibernate.dialect"));
+        properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
         properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
         return properties;
@@ -43,7 +43,7 @@ public class DataBaseContext {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DriverManagerDataSource dataSource,
-                                                                       Properties hibernateProperties){
+                                                                       Properties hibernateProperties) {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(dataSource);
         emf.setJpaProperties(hibernateProperties);
@@ -54,7 +54,7 @@ public class DataBaseContext {
     }
 
     @Bean
-    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory){
+    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
         return jpaTransactionManager;

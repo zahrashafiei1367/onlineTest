@@ -36,6 +36,8 @@ public class Controller {
     private ExamService examService;
     @Autowired
     private QuestionService questionService;
+    private List<String> answers = new ArrayList<>();
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getHomePage() {
         return "home";
@@ -634,7 +636,7 @@ public class Controller {
 
     @RequestMapping(value = "/addNewExamProcess", method = RequestMethod.POST)
     public String addNewExam(@Valid @ModelAttribute("exam") Exam exam, BindingResult br, @RequestParam("id") int id,
-                               @RequestParam("courseNumber") int courseNumber, Model model) {
+                             @RequestParam("courseNumber") int courseNumber, Model model) {
         try {
             model.addAttribute("errorMsg", "");
             Course course = courseService.findByNumber(courseNumber);
@@ -668,13 +670,13 @@ public class Controller {
     }
 
     @RequestMapping(value = "/examQuestion", method = RequestMethod.GET)
-    public String showExamQuestions(Model model, @RequestParam("id") int teacherId,@RequestParam("examId") int examId) {
+    public String showExamQuestions(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId) {
         try {
-            Exam exam=examService.findById(examId);
+            Exam exam = examService.findById(examId);
             Teacher teacher = teacherService.findById(teacherId);
             List<Exam> exams = examService.showAllTeacherExams(teacher);
-            List<Question> questions=questionService.findByExam(exam);
-            model.addAttribute("questions",questions);
+            List<Question> questions = questionService.findByExam(exam);
+            model.addAttribute("questions", questions);
             model.addAttribute("exams", exams);
             model.addAttribute("id", teacherId);
             return ("myExams");
@@ -685,32 +687,40 @@ public class Controller {
     }
 
     @RequestMapping(value = "/addAQuestionChoose", method = RequestMethod.GET)
-    public String showAddNewQuestionChoose(Model model, @RequestParam("id") int teacherId,@RequestParam("examId") int examId) {
-        model.addAttribute("id",teacherId);
-        model.addAttribute("examId",examId);
-        return"choose";
+    public String showAddNewQuestionChoose(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId) {
+        model.addAttribute("id", teacherId);
+        model.addAttribute("examId", examId);
+        return "choose";
     }
 
     @RequestMapping(value = "/addAnswer", method = RequestMethod.GET)
-    public String addNewAnswerProcess(Model model, @RequestParam("question") Question question){
-        List<String> answers=question.getAnswers();
-        answers.add(question.getAns());
+    public String addNewAnswerProcess(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId, @RequestParam("ans") String answer) {
+
+        answers.add(answer);
+        Question question = new Question();
+        question.setQuestionType(QuestionType.TEST);
+        model.addAttribute("question", question);
+        model.addAttribute("teacherId", teacherId);
+        model.addAttribute("examId", examId);
+        model.addAttribute("question", question);
+        model.addAttribute("classifications", classificationService.findAll());
         return "addNewQuestion";
     }
+
     @RequestMapping(value = "/addAQuestion", method = RequestMethod.GET)
-    public String showAddNewQuestion(Model model, @RequestParam("id") int teacherId,@RequestParam("examId") int examId,@RequestParam("qt") String qt) {
+    public String showAddNewQuestion(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId, @RequestParam("qt") String qt) {
         try {
-            Question question=new Question();
-            if(qt.equals("ex"))
-            question.setQuestionType(QuestionType.DESCRIPTIVE);
-            else
+            Question question = new Question();
+            if (qt.equals("ex"))
+                question.setQuestionType(QuestionType.DESCRIPTIVE);
+            else {
                 question.setQuestionType(QuestionType.TEST);
-            List<String> ans=new ArrayList<>();
-            question.setAnswers(ans);
+                question.setAnswers(answers);
+            }
             model.addAttribute("teacherId", teacherId);
             model.addAttribute("examId", examId);
-            model.addAttribute("question",question);
-            model.addAttribute("classifications",classificationService.findAll());
+            model.addAttribute("question", question);
+            model.addAttribute("classifications", classificationService.findAll());
             return ("addNewQuestion");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -726,16 +736,18 @@ public class Controller {
                 model.addAttribute("question", question);
                 model.addAttribute("teacherId", teacherId);
                 model.addAttribute("examId", examId);
-                model.addAttribute("classifications",classificationService.findAll());
+                model.addAttribute("classifications", classificationService.findAll());
                 return ("addNewQuestion");
             }
             Teacher teacher = teacherService.findById(teacherId);
-            Exam exam=examService.findById(examId);
+            Exam exam = examService.findById(examId);
             question.setExam(exam);
-            Classification classification=classificationService.findByValue(question.getEmbCl());
+            Classification classification = classificationService.findByValue(question.getEmbCl());
             question.setClassification(classification);
             question.setTeacher(teacher);
-            List<Exam> exams=examService.showAllTeacherExams(teacher);
+            questionService.addAQuestion(question);
+            List<Exam> exams = examService.showAllTeacherExams(teacher);
+            question.setEmbCl("expm");
             model.addAttribute("exams", exams);
             model.addAttribute("id", teacherId);
             return ("myExams");

@@ -66,27 +66,29 @@
     </style>
 </head>
 <body>
-
+<script>
+    function myFunction(){
+        x=document.getElementById('a').value;
+        y=document.getElementById('b');
+        y.href='http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAnswer?id=${id}&examId=${examId}&ans='+x;
+    }
+</script>
 <div>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/myExams?id=${id}">My Exams</a><br/>
     <br/>
-    <form:form modelAttribute="question" name="myForm" action="addNewQuestionProcess?id=${teacherId}}&examId=${examId}"  method="POST">
+    <form:form modelAttribute="question" name="myForm" action="addNewQuestionProcess?id=${teacherId}&examId=${examId}"  method="POST">
         <label><b>title</b></label><br/>
         <form:input path="title" type="text" placeholder="title should be short"/><form:errors path="title" cssClass="error"/><br/>
         <label><b>Question</b></label><br/>
         <form:input path="question" type="text" placeholder="Enter question"/><form:errors path="question" cssClass="error"/><br/>
         <label><b>Answer</b></label><br/>
         <form:input path="correctAnswer" type="text" placeholder="Enter correct answer"/></br>
-<%--        <lable style="font-size: smaller">Question Type: test</lable><form:radiobutton path="embQT" name="r1" value="test"/>--%>
-<%--        <lable style="font-size: smaller">explanation</lable> <form:radiobutton path="embQT" name="r1" value="explanation"/>--%>
         <c:if test="${String.valueOf(question.questionType).compareTo('TEST') == 0}">
             <br/><label>Add Answer:</label><br/>
-            <form:input path="ans" type="text" id="a"/>
-            <form action="addAnswer?question=${question}" method="get">
-                <button type="submit">add answer</button></br>
-            </form>
+            <input type="text" id="a"/>
+            <a href="" id="b"onclick="myFunction()" method="GET">add answer</a></br>
 
             <form:hidden path="answers" id="answers"></form:hidden>
         </c:if>

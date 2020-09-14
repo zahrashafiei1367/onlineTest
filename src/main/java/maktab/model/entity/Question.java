@@ -18,7 +18,8 @@ public class Question extends QuestionBank{
     private String ans;
     public Question() {
     }
-
+    @Transient
+    private String embCl;
     public Exam getExam() {
         return exam;
     }
@@ -49,5 +50,13 @@ public class Question extends QuestionBank{
 
     public void setAns(String ans) {
         this.ans = ans;
+    }
+
+    public String getEmbCl() {
+        return embCl;
+    }
+
+    public void setEmbCl(String embCl) {
+        this.embCl = embCl;
     }
 }

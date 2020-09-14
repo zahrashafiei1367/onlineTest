@@ -90,18 +90,25 @@
 <br/>
 <c:if test="${questions != null}">
     <table>
+            <th>title</th>
+            <th>question</th>
+            <th>correct answer</th>
         <c:forEach var="q" items="${questions}">
+
             <tr>
-                <td>${q.question}</td></tr>
-                <c:if test="${q.questionType==test}">
-                    <c:forEach var="ans" items="${q.answers}">
-                        <tr>
-                            <td class="aligner"><ul class="fa-ul"><li><span class="fa-li"><i class="fas fa-square"></i></span></li></ul></td>
-                            <td>${ans}</td>
-                        </tr>
-                    </c:forEach>
-                </c:if>
+                <td>${q.title}</td>
+                <td>${q.question}</td>
+                <td>${q.correctAnswer}</td>
             </tr>
+<%--                <c:if test="${q.embCl==test}">--%>
+<%--                    <c:forEach var="ans" items="${q.answers}">--%>
+<%--                        <tr>--%>
+<%--                            <td class="aligner"><ul class="fa-ul"><li><span class="fa-li"><i class="fas fa-square"></i></span></li></ul></td>--%>
+<%--                            <td>${ans}</td>--%>
+<%--                        </tr>--%>
+<%--                    </c:forEach>--%>
+<%--                </c:if>--%>
+
         </c:forEach>
     </table>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose?id=${id}&examId=${examId}">Add A Question</a>

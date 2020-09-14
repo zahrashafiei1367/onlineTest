@@ -70,10 +70,10 @@
 
         <label class="lableAdmin" style="text-decoration-style: solid;color: blue;">Do you want to make a test question?</label><br/>
 
-    <form action="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestion?id=${id}&examId=${examId}$qt=test">
+    <form action="addAQuestion?id=${id}&examId=${examId}$qt=test">
         <input class="submitAdmin" type="submit" value="yes">
     </form>
-    <form action="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestion?id=${id}&examId=${examId}$qt=ex">
+    <form action="addAQuestion?id=${id}&examId=${examId}$qt=ex">
         <input class="submitAdmin" type="submit" value="No">
     </form>
 </div>
