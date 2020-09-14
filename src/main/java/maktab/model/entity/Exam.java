@@ -15,12 +15,7 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
-    @ManyToMany
-    @JoinTable(
-            name = "exam_question",
-            joinColumns = {@JoinColumn(name = "question_id")},
-            inverseJoinColumns = {@JoinColumn(name = "exam_id")}
-    )
+    @OneToMany(mappedBy = "exam")
     private List<Question> questions;
     @Pattern(regexp="^([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:hh:mm:ss")
     private String timer;

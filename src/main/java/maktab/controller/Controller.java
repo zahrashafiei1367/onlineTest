@@ -34,7 +34,8 @@ public class Controller {
     private AdminService adminService;
     @Autowired
     private ExamService examService;
-
+    @Autowired
+    private QuestionService questionService;
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getHomePage() {
         return "home";
@@ -672,7 +673,7 @@ public class Controller {
             Exam exam=examService.findById(examId);
             Teacher teacher = teacherService.findById(teacherId);
             List<Exam> exams = examService.showAllTeacherExams(teacher);
-            List<Question> questions=exam.getQuestions();
+            List<Question> questions=questionService.findByExam(exam);
             model.addAttribute("questions",questions);
             model.addAttribute("exams", exams);
             model.addAttribute("id", teacherId);
@@ -683,18 +684,64 @@ public class Controller {
         }
     }
 
+    @RequestMapping(value = "/addAQuestionChoose", method = RequestMethod.GET)
+    public String showAddNewQuestionChoose(Model model, @RequestParam("id") int teacherId,@RequestParam("examId") int examId) {
+        model.addAttribute("id",teacherId);
+        model.addAttribute("examId",examId);
+        return"choose";
+    }
+
+    @RequestMapping(value = "/addAnswer", method = RequestMethod.GET)
+    public String addNewAnswerProcess(Model model, @RequestParam("question") Question question){
+        List<String> answers=question.getAnswers();
+        answers.add(question.getAns());
+        return "addNewQuestion";
+    }
     @RequestMapping(value = "/addAQuestion", method = RequestMethod.GET)
-    public String showAddNewExam(Model model, @RequestParam("id") int teacherId, @RequestParam("courseId") int courseId,@RequestParam("examId") int examId) {
+    public String showAddNewQuestion(Model model, @RequestParam("id") int teacherId,@RequestParam("examId") int examId,@RequestParam("qt") String qt) {
         try {
             Question question=new Question();
+            if(qt.equals("ex"))
+            question.setQuestionType(QuestionType.DESCRIPTIVE);
+            else
+                question.setQuestionType(QuestionType.TEST);
+            List<String> ans=new ArrayList<>();
+            question.setAnswers(ans);
             model.addAttribute("teacherId", teacherId);
             model.addAttribute("examId", examId);
-            model.addAttribute("courseId", courseId);
             model.addAttribute("question",question);
+            model.addAttribute("classifications",classificationService.findAll());
             return ("addNewQuestion");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "error";
+        }
+    }
+
+    @RequestMapping(value = "/addNewQuestionProcess", method = RequestMethod.POST)
+    public String addNewExam(@Valid @ModelAttribute("question") Question question, BindingResult br, @RequestParam("id") int teacherId,
+                             @RequestParam("examId") int examId, Model model) {
+        try {
+            if (br.hasErrors()) {
+                model.addAttribute("question", question);
+                model.addAttribute("teacherId", teacherId);
+                model.addAttribute("examId", examId);
+                model.addAttribute("classifications",classificationService.findAll());
+                return ("addNewQuestion");
+            }
+            Teacher teacher = teacherService.findById(teacherId);
+            Exam exam=examService.findById(examId);
+            question.setExam(exam);
+            Classification classification=classificationService.findByValue(question.getEmbCl());
+            question.setClassification(classification);
+            question.setTeacher(teacher);
+            List<Exam> exams=examService.showAllTeacherExams(teacher);
+            model.addAttribute("exams", exams);
+            model.addAttribute("id", teacherId);
+            return ("myExams");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
         }
     }
 //    Teacher teacher=teacherService.findById(teacherId);

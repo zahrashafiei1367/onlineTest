@@ -67,7 +67,7 @@
 <body>
 <div>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
-    <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a>
+    <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a><br/>
     <label><b>Course Title:${course.title}</b></label><br/>
     <form:form modelAttribute="exam" name="myForm" action="addNewExamProcess?id=${id}&courseNumber=${course.number}"  method="POST">
         <label><b>Exam Title</b></label><br/>

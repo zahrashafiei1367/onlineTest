@@ -78,7 +78,7 @@
             <td>${crs.theEnd}</td>
             <td>${crs.timer}</td>
             <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examQuestion?id=${id}&examId=${crs.id}">Questions</a></td>
-            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestion?id=${id}&courseId=${course.id}&examId=${crs.id}">Add A Question</a></td>
+            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose?id=${id}&examId=${crs.id}">Add A Question</a></td>
             <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examStudent?id=${id}&examId=${crs.id}">Students</a></td>
             <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examResult?id=${id}&examId=${crs.id}">Results</a></td>
             <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examEdit?id=${id}&examId=${crs.id}">Edit</a></td>
@@ -104,7 +104,7 @@
             </tr>
         </c:forEach>
     </table>
-    <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestion?id=${id}&courseId=${course.id}&examId=${exam.id}">Add A Question</a>
+    <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose?id=${id}&examId=${examId}">Add A Question</a>
 </c:if>
 <c:if test="${students != null}">
     <table>
