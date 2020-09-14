@@ -21,4 +21,5 @@ public interface StudentDao extends UserBaseDao<Student>, JpaSpecificationExecut
    Student save(Student s);
     List<Student> findByAdmin(Admin admin);
     List<Student> findByCourses(Course course);
+    Optional<Student> findById(int id);
 }

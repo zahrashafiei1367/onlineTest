@@ -76,9 +76,6 @@
     <c:forEach var="cls" items="${classifications}">
         <tr>
             <td>${cls.value}</td>
-            <td>
-                <a href='' onclick="this.href='http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/editClassificationsProcess?id=${adminId}&number=${cls.id}&value='+document.getElementById('value').value" style="color: blue" >Edit</a>
-            </td>
         </tr>
     </c:forEach>
     <div>

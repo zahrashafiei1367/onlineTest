@@ -1,6 +1,7 @@
 package maktab.model.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
 @Entity
@@ -14,7 +15,12 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
-    @OneToMany(mappedBy = "exam")
+    @ManyToMany
+    @JoinTable(
+            name = "exam_question",
+            joinColumns = {@JoinColumn(name = "question_id")},
+            inverseJoinColumns = {@JoinColumn(name = "exam_id")}
+    )
     private List<Question> questions;
     @Pattern(regexp="^([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:hh:mm:ss")
     private String timer;
@@ -22,8 +28,12 @@ public class Exam {
     private String theBeginning;
     @Pattern(regexp="^[0-2]{1}[0-9]{3}/(0?[1-9]|1[0-2])/([0]?[1-9]|[1-2]?[1-9]|3?[0-1]) ([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:yy/MM/dd hh:mm:ss")
     private String theEnd;
-    //private Map<Student,List<Result>> studentResultMap;
-
+    @OneToMany(mappedBy = "exam")
+    private List<Result> results;
+    @NotNull( message = "*title should be filled.")
+    private String title;
+    @NotNull( message = "*explanation should be filled.")
+    private String explanation;
 
     public Exam() {
     }
@@ -82,5 +92,29 @@ public class Exam {
 
     public void setTheEnd(String theEnd) {
         this.theEnd = theEnd;
+    }
+
+    public List<Result> getResults() {
+        return results;
+    }
+
+    public void setResults(List<Result> results) {
+        this.results = results;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getExplanation() {
+        return explanation;
+    }
+
+    public void setExplanation(String explanation) {
+        this.explanation = explanation;
     }
 }

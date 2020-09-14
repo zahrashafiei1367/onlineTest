@@ -98,6 +98,7 @@
         <label><b>class will be finished at:</b></label><br/>
         <form:input path="theEnd" type="text" placeholder="Enter date of finishing:yyyy/mm/dd" id="et"/><form:errors path="theEnd" cssClass="error"/><br/>
         <form:hidden path="embeddableClassification" id="classification"/>
+        <p class="error" >${errorMsg}</p><br/>
         <lable style="font-size: smaller">Classification: </lable>
         <c:forEach var="cls" items="${classifications}">
             <tr>

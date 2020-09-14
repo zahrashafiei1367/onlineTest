@@ -1,5 +1,6 @@
 package maktab.model.dao;
 
+import maktab.model.entity.Admin;
 import maktab.model.entity.Classification;
 import maktab.model.entity.Course;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -19,4 +20,5 @@ public interface ClassificationDao extends Repository<Classification, Integer>, 
     @Modifying
     @Query("update Classification set value=:newValue where id=:id")
     void update(@Param("id") int id, @Param("newValue") String newValue);
+
 }

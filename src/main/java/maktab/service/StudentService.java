@@ -11,14 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class StudentService {
     @Autowired
     private StudentDao studentDao;
-
 
 
     @Transactional
@@ -52,20 +50,54 @@ public class StudentService {
     @Transactional
     public List<Student> findMaxMatch(String name,
                                       String family,
-                                      String username,Admin admin) {
+                                      String username, Admin admin) {
         List<Student> students = studentDao.findAll(StudentSpecifications.findMaxMatch(name, family, username));
-        List<Student> adminStudents=new ArrayList<>();
-        for (int i=0;i<students.size();i++){
-            Student student=students.get(i);
-            if(student.getAdmin().getId()==admin.getId())
+        List<Student> adminStudents = new ArrayList<>();
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            if (student.getAdmin().getId() == admin.getId())
                 adminStudents.add(student);
         }
         return adminStudents;
     }
 
     @Transactional(readOnly = true)
-    public List<Student> showAllStudentsByCourse(Course course) {
-        return studentDao.findByCourses(course);
+    public List<Student> showAllStudentsHasCourse(Admin admin,Course course) {
+        List<Student> students=studentDao.findByAdmin(admin);
+        List<Student> studentsThatHasCourse=new ArrayList<>();
+        for(Student student:students){
+            if(student.getCourses().contains(course))
+                studentsThatHasCourse.add(student);
+        }
+        return studentsThatHasCourse;
     }
+
+    @Transactional
+    public Student findById(int id) throws Exception {
+        Optional<Student> found = studentDao.findById(id);
+        if (found.isPresent())
+            return found.get();
+        else
+            throw new Exception("student with this id not found");
+    }
+
+    @Transactional
+    public void addOrRemoveCourse(int studentId, Course course) throws Exception {
+        Student student = findById(studentId);
+        List<Course> courses = student.getCourses();
+        if(courses.contains(course))
+            courses.remove(course);
+        else
+            courses.add(course);
+//        for (Course course1 : courses) {
+//            if (course1.getId() == course.getId()) {
+//                courses.remove(course1);
+//                return true;
+//            }
+//        }
+//        courses.add(course);
+//        return false;
+    }
+
 
 }

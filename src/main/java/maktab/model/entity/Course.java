@@ -3,6 +3,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
+import java.util.Objects;
+
 @Entity
 public class Course {
 
@@ -132,21 +134,24 @@ public class Course {
     public Course() {
     }
 
+
     @Override
-    public String toString() {
-        return "Course{" +
-                "title='" + title + '\'' +
-                ", id=" + id +
-                ", number=" + number +
-                ", caption='" + caption + '\'' +
-                ", classification=" + classification +
-                ", embeddableClassification='" + embeddableClassification + '\'' +
-                ", students=" + students +
-                ", teachers=" + teachers +
-                ", exams=" + exams +
-                ", admin=" + admin +
-                ", theBeginning='" + theBeginning + '\'' +
-                ", theEnd='" + theEnd + '\'' +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Course)) return false;
+        Course course1 = (Course) o;
+        return getId() == course1.getId() &&
+                getNumber() == course1.getNumber() &&
+                getTitle().equals(course1.getTitle()) &&
+                getCaption().equals(course1.getCaption()) &&
+                getTheBeginning().equals(course1.getTheBeginning()) &&
+                getTheEnd().equals(course1.getTheEnd());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTitle(), getId(), getNumber(), getCaption(), getAdmin(), getTheBeginning(), getTheEnd());
+    }
+
+
 }

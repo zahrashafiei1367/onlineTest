@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -88,14 +92,30 @@ public class Controller {
         try {
             if (user.getAuthority().equals("teacher")) {
                 Teacher teacher = teacherService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-                model.addAttribute("teacher", teacher);
+                if (!teacher.getEnabled()) {
+                    model.addAttribute("errorMsg", "your account has not verified yet.");
+                    return "error";
+                }
+                model.addAttribute("id", teacher.getId());
                 model.addAttribute("firstName", teacher.getName());
+                List<Course> courses = teacher.getCourses();
+                model.addAttribute("courses", courses);
+                return ("welcomeTeacher");
+
             } else if (user.getAuthority().equals("student")) {
                 Student student = studentService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-                model.addAttribute("student", student);
+                if (!student.getEnabled()) {
+                    model.addAttribute("errorMsg", "your account has not verified yet.");
+                    return "error";
+                }
+                model.addAttribute("id", student.getId());
                 model.addAttribute("firstName", student.getName());
+
+                return "welcomeStudent";
+            } else {
+                model.addAttribute("errorMsg", "please choose student or teacher");
+                return "error";
             }
-            return ("welcome2");
         } catch (Exception e) {
             model.addAttribute("errorMsg", "username or password is incorrect.");
             return ("error");
@@ -125,14 +145,13 @@ public class Controller {
                 model.addAttribute("teachers", teachers);
                 return "welcome";
             } else if (admin.getAuthority().equals("teacher")) {
-                Teacher teacher = makeTeacherObjectByUser(admin);
-                teacherService.registerNewTeacher(teacher);
+                model.addAttribute("errorMsg", "your account has not verified yet.");
+                return "error";
             } else {
-                Student student = makeStudentObjectByUser(admin);
-                studentService.registerNewStudent(student);
+                model.addAttribute("errorMsg", "your account has not verified yet.");
+                return "error";
             }
-            model.addAttribute("name", admin.getName());
-            return ("welcome2");
+
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
             return ("error");
@@ -302,15 +321,22 @@ public class Controller {
     @RequestMapping(value = "/addNewCourseProcess", method = RequestMethod.POST)
     public String addNewCourse(@Valid @ModelAttribute("course") Course course, BindingResult br, @RequestParam("id") int id,
                                Model model) {
-
-        if (br.hasErrors()) {
-            model.addAttribute("course", course);
-            model.addAttribute("classifications", classificationService.findAll());
-            model.addAttribute("adminId", id);
-            return "addNewCourse";
-        }
-
         try {
+            model.addAttribute("errorMsg", "");
+            if (br.hasErrors()) {
+                model.addAttribute("course", course);
+                model.addAttribute("classifications", classificationService.findAll());
+                model.addAttribute("adminId", id);
+                return "addNewCourse";
+            }
+
+            if (!compareDates(course.getTheBeginning(), course.getTheEnd())) {
+                model.addAttribute("course", course);
+                model.addAttribute("classifications", classificationService.findAll());
+                model.addAttribute("adminId", id);
+                model.addAttribute("errorMsg", "the date of starting the class should be before ending.");
+                return "addNewCourse";
+            }
 
             Admin admin = adminService.findById(id);
             model.addAttribute("admin", admin);
@@ -324,6 +350,32 @@ public class Controller {
             model.addAttribute("errorMsg", e.getMessage());
             return ("error");
         }
+
+    }
+
+    private boolean compareDates(String startDate, String endDate) {
+
+        try {
+            Date start = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH)
+                    .parse(startDate);
+            Date end = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH)
+                    .parse(endDate);
+
+            if (start.compareTo(end) > 0) {
+                return false;
+            } else if (start.compareTo(end) < 0) {
+                return true;
+            } else if (start.compareTo(end) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
 
     }
 
@@ -365,11 +417,11 @@ public class Controller {
             if (status != 0) {
                 Course course = courseService.findByNumber(number);
                 if (status == 1) {
-                    model.addAttribute("students", studentService.showAllStudentsByCourse(course));
+                    model.addAttribute("students", studentService.showAllStudentsHasCourse(adminUser, course));
                 } else if (status == 2) {
-                    model.addAttribute("teachers", teacherService.showAllTeachersByCourse(course));
+                    model.addAttribute("teachers", teacherService.showAllTeachersHasCourse(adminUser, course));
                 } else if (status == 3) {
-                    model.addAttribute("exams", examService.showAllByCourse(course));
+                    model.addAttribute("exams", examService.showAllCourseExams(course));
                 }
             }
             return ("course");
@@ -383,17 +435,22 @@ public class Controller {
     @RequestMapping(value = "/classifications", method = RequestMethod.GET)
     public String showClassifications(@RequestParam("id") int id,
                                       Model model) {
-        model.addAttribute("adminId", id);
-        model.addAttribute("classifications", classificationService.findAll());
-        model.addAttribute("classification", new Classification());
-        return ("classifications");
+        try {
+            model.addAttribute("adminId", id);
+            model.addAttribute("classifications", classificationService.findAll());
+            model.addAttribute("classification", new Classification());
+            return ("classifications");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
     }
 
     @RequestMapping(value = "/addClassificationsProcess", method = RequestMethod.POST)
-    public String addClassifications(@RequestParam("id") int id, @Valid@ModelAttribute Classification classification, BindingResult br,Model model) {
+    public String addClassifications(@RequestParam("id") int id, @Valid @ModelAttribute Classification classification, BindingResult br, Model model) {
         try {
             model.addAttribute("adminId", id);
-            if(br.hasErrors()){
+            if (br.hasErrors()) {
                 model.addAttribute("classifications", classificationService.findAll());
                 return ("classifications");
             }
@@ -409,32 +466,242 @@ public class Controller {
 
     }
 
-    @RequestMapping(value = "/editClassificationsProcess", method = RequestMethod.GET)
-    public String editClassifications(@RequestParam("id") int id, @RequestParam("number") int number, @RequestParam("value") String value, Model model) {
-        try {
-            model.addAttribute("adminId", id);
-            classificationService.update(number,value);
-            model.addAttribute("classifications", classificationService.findAll());
-            model.addAttribute("classification", new Classification());
-            return ("classifications");
-        } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return ("error");
-        }
-
-    }
 
     @RequestMapping(value = "/addStudentOrTeacherToCourse", method = RequestMethod.GET)
-    public String showAddNewPeopleToCourse(Model model, @RequestParam("id") int id,@RequestParam("number") int number) {
+    public String showAddNewPeopleToCourse(Model model, @RequestParam("id") int id, @RequestParam("number") int number) {
         try {
+            Course course = courseService.findByNumber(number);
+            model.addAttribute("courseNumber", number);
             model.addAttribute("adminId", id);
-            Admin admin=adminService.findById(id);
-            model.addAttribute("students",studentService.showAllStudent(admin));
-            model.addAttribute("teachers",teacherService.showAllTeachers(admin));
+            Admin admin = adminService.findById(id);
+            List<Student> students = showAllStudentsIfHasCourseMakeHasCourseTrue(admin, course);
+            model.addAttribute("students", students);
+            List<Teacher> teachers = showAllTeachersIfHasCourseMakeHasCourseTrue(admin, course);
+            model.addAttribute("teachers", teachers);
+            return ("addNewPeopleToCourse");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "error";
         }
-        return ("addNewPeopleToCourse");
+
     }
+
+    private List<Teacher> showAllTeachersIfHasCourseMakeHasCourseTrue(Admin admin, Course course) {
+        List<Teacher> teachers = teacherService.showAllTeachers(admin);
+        for (Teacher teacher : teachers) {
+            if (teacher.getCourses().contains(course)) {
+                teacher.setHasCourse(true);
+            } else teacher.setHasCourse(false);
+        }
+        return teachers;
+    }
+
+    private List<Student> showAllStudentsIfHasCourseMakeHasCourseTrue(Admin admin, Course course) {
+        List<Student> students = studentService.showAllStudent(admin);
+        for (Student student : students) {
+            if (student.getCourses().contains(course))
+                student.setHasCourse(true);
+            else student.setHasCourse(false);
+        }
+        return students;
+    }
+
+    @RequestMapping(value = "/changeSt", method = RequestMethod.GET)
+    public String changeStatusOfStudentCourse(Model model, @RequestParam("id") int userId,
+                                              @RequestParam("adminId") int adminId, @RequestParam("courseNumber") int courseNumber) {
+        try {
+            model.addAttribute("adminId", adminId);
+            Course course = courseService.findByNumber(courseNumber);
+            model.addAttribute("courseNumber", courseNumber);
+            Admin admin = adminService.findById(adminId);
+            User user = userService.findById(userId);
+            if ((user instanceof Student))
+                studentService.addOrRemoveCourse(userId, course);
+            else if (user instanceof Teacher)
+                teacherService.addOrRemoveCourse(userId, course);
+            else
+                throw new Exception("usernot student oe teacher");
+            List<Student> students = showAllStudentsIfHasCourseMakeHasCourseTrue(admin, course);
+            List<Teacher> teachers = showAllTeachersIfHasCourseMakeHasCourseTrue(admin, course);
+            model.addAttribute("students", students);
+            model.addAttribute("teachers", teachers);
+            return ("addNewPeopleToCourse");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+
+    }
+
+    @RequestMapping(value = "/exams", method = RequestMethod.GET)
+    public String showCourseExams(Model model, @RequestParam("id") int teacherId, @RequestParam("courseId") int courseNumber) {
+        try {
+            Teacher teacher = teacherService.findById(teacherId);
+            List<Course> courses = teacher.getCourses();
+            Course course = courseService.findByNumber(courseNumber);
+            List<Exam> exams = examService.showAllCourseExams(course);
+            model.addAttribute("exams", exams);
+            model.addAttribute("id", teacherId);
+            model.addAttribute("courseNumber", courseNumber);
+            model.addAttribute("courses", courses);
+            return ("welcomeTeacher");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/students", method = RequestMethod.GET)
+    public String showCourseStudents(Model model, @RequestParam("id") int teacherId, @RequestParam("courseId") int courseNumber) {
+        try {
+            Teacher teacher = teacherService.findById(teacherId);
+            List<Course> courses = teacher.getCourses();
+            Course course = courseService.findByNumber(courseNumber);
+            List<Student> students = studentService.showAllStudentsHasCourse(teacher.getAdmin(), course);
+            model.addAttribute("students", students);
+            model.addAttribute("id", teacherId);
+            model.addAttribute("courseNumber", courseNumber);
+            model.addAttribute("courses", courses);
+            return ("welcomeTeacher");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/teachers", method = RequestMethod.GET)
+    public String showCourseTeachers(Model model, @RequestParam("id") int teacherId, @RequestParam("courseId") int courseNumber) {
+        try {
+            Teacher teacher = teacherService.findById(teacherId);
+            List<Course> courses = teacher.getCourses();
+            Course course = courseService.findByNumber(courseNumber);
+            List<Teacher> teachers = teacherService.showAllTeachersHasCourse(teacher.getAdmin(), course);
+            model.addAttribute("students", teachers);
+            model.addAttribute("id", teacherId);
+            model.addAttribute("courseNumber", courseNumber);
+            model.addAttribute("courses", courses);
+            return ("welcomeTeacher");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/backTWelcome", method = RequestMethod.GET)
+    public String showwelcomeTeacher(Model model, @RequestParam("id") int teacherId) {
+        try {
+            Teacher teacher = teacherService.findById(teacherId);
+            List<Course> courses = teacher.getCourses();
+            model.addAttribute("id", teacherId);
+            model.addAttribute("courses", courses);
+            return ("welcomeTeacher");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/myExams", method = RequestMethod.GET)
+    public String showCourseExams(Model model, @RequestParam("id") int teacherId) {
+        try {
+            Teacher teacher = teacherService.findById(teacherId);
+            List<Exam> exams = examService.showAllTeacherExams(teacher);
+            model.addAttribute("exams", exams);
+            model.addAttribute("id", teacherId);
+            return ("myExams");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+
+    @RequestMapping(value = "/addANewExam", method = RequestMethod.GET)
+    public String showAddNewExam(Model model, @RequestParam("id") int teacherId, @RequestParam("courseId") int courseId) {
+        try {
+            Course course = courseService.findByNumber(courseId);
+            Exam exam = new Exam();
+            model.addAttribute("course", course);
+            model.addAttribute("exam", exam);
+            model.addAttribute("id", teacherId);
+            return ("addNewExam");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/addNewExamProcess", method = RequestMethod.POST)
+    public String addNewExam(@Valid @ModelAttribute("exam") Exam exam, BindingResult br, @RequestParam("id") int id,
+                               @RequestParam("courseNumber") int courseNumber, Model model) {
+        try {
+            model.addAttribute("errorMsg", "");
+            Course course = courseService.findByNumber(courseNumber);
+            if (br.hasErrors()) {
+                model.addAttribute("course", course);
+                model.addAttribute("exam", exam);
+                model.addAttribute("id", id);
+                return ("addNewExam");
+            }
+
+            if (!compareDates(exam.getTheBeginning(), exam.getTheEnd())) {
+                model.addAttribute("course", course);
+                model.addAttribute("exam", exam);
+                model.addAttribute("id", id);
+                model.addAttribute("errorMsg", "the date of starting the exam should be before ending.");
+                return "addNewCourse";
+            }
+
+            Teacher teacher = teacherService.findById(id);
+            exam.setTeacher(teacher);
+            exam.setCourse(course);
+            examService.addNewExam(exam);
+            List<Exam> exams = examService.showAllTeacherExams(teacher);
+            model.addAttribute("exams", exams);
+            model.addAttribute("id", id);
+            return ("myExams");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+    }
+
+    @RequestMapping(value = "/examQuestion", method = RequestMethod.GET)
+    public String showExamQuestions(Model model, @RequestParam("id") int teacherId,@RequestParam("examId") int examId) {
+        try {
+            Exam exam=examService.findById(examId);
+            Teacher teacher = teacherService.findById(teacherId);
+            List<Exam> exams = examService.showAllTeacherExams(teacher);
+            List<Question> questions=exam.getQuestions();
+            model.addAttribute("questions",questions);
+            model.addAttribute("exams", exams);
+            model.addAttribute("id", teacherId);
+            return ("myExams");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/addAQuestion", method = RequestMethod.GET)
+    public String showAddNewExam(Model model, @RequestParam("id") int teacherId, @RequestParam("courseId") int courseId,@RequestParam("examId") int examId) {
+        try {
+            Question question=new Question();
+            model.addAttribute("teacherId", teacherId);
+            model.addAttribute("examId", examId);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("question",question);
+            return ("addNewQuestion");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+//    Teacher teacher=teacherService.findById(teacherId);
+//    Course course = courseService.findByNumber(courseId);
+//    Exam exam=examService.findById(examId);
+    //examStudent?id=${id}&examId=${crs.id}
+    //examResult?id=${id}&examId=${crs.id}
+    //examEdit?id=${id}&examId=${crs.id}
+    //examDelete?id=${id}&courseId=${crs.id}
 }

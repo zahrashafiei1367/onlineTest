@@ -73,6 +73,8 @@
         <th>Number</th>
         <th>Caption</th>
         <th>Classification</th>
+        <th>Start from:</th>
+        <th>End at:</th>
         <th>Students</th>
         <th>Teachers</th>
         <th>Exams</th>
@@ -83,6 +85,8 @@
             <td>${course.number}</td>
             <td>${course.caption}</td>
             <td>${course.classification.value}</td>
+            <td>${course.theBeginning}</td>
+            <td>${course.theEnd}</td>
             <td>
                 <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/courses?id=${adminId}&number=${course.number}&status=1" style="color: blue" >Students</a>
             </td>
@@ -99,7 +103,7 @@
     </c:forEach>
 
 </table>
-<c:if test="${students != null}&${students.size() != 0}">
+<c:if test="${students != null}">
     <table>
         <tr>
             <th>Student Name</th>
@@ -116,7 +120,7 @@
     </table>
 </c:if>
 <br/>
-<c:if test="${teachers != null}&${teachers.size() != 0}">
+<c:if test="${teachers != null}">
     <table>
         <tr>
             <th>Teacher Name</th>
@@ -133,7 +137,7 @@
     </table>
 </c:if>
 <br/>
-<c:if test="${exams != null}&${exams.size() != 0}">
+<c:if test="${exams != null}">
     <table>
         <tr>
             <th>Timer</th>

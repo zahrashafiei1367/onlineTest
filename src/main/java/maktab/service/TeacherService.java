@@ -4,7 +4,6 @@ import maktab.model.dao.TeacherDao;
 import maktab.model.dao.TeacherSpecification;
 import maktab.model.entity.Admin;
 import maktab.model.entity.Course;
-import maktab.model.entity.Student;
 import maktab.model.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -53,14 +51,43 @@ public class TeacherService {
         List<Teacher> adminTeachers = new ArrayList<>();
         for (int i = 0; i < teachers.size(); i++) {
             Teacher teacher = teachers.get(i);
-            if (teacher.getAdmin().getId()== admin.getId())
+            if (teacher.getAdmin().getId() == admin.getId())
                 adminTeachers.add(teacher);
         }
         return adminTeachers;
     }
 
-    @Transactional(readOnly = true)
-    public List<Teacher> showAllTeachersByCourse(Course course) {
-        return teacherDao.findByCourses(course);
+
+    @Transactional
+    public void addOrRemoveCourse(int userId, Course course) throws Exception {
+        Teacher teacher = findById(userId);
+        List<Course> courses = teacher.getCourses();
+        if (courses.contains(course))
+            courses.remove(course);
+        else
+            courses.add(course);
     }
+
+    @Transactional
+    public Teacher findById(int id) throws Exception {
+        Optional<Teacher> found = teacherDao.findById(id);
+        if (found.isPresent())
+            return found.get();
+        else
+            throw new Exception("teacher with this id not found");
+
+    }
+
+    @Transactional
+    public List<Teacher> showAllTeachersHasCourse(Admin admin, Course course) {
+        List<Teacher> teachers = teacherDao.findByAdmin(admin);
+        List<Teacher> teachersThatHasCourse = new ArrayList<>();
+        for (Teacher teacher : teachers) {
+            if (teacher.getCourses().contains(course))
+                teachersThatHasCourse.add(teacher);
+        }
+        return teachersThatHasCourse;
+    }
+
+
 }

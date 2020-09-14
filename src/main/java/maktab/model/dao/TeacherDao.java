@@ -18,4 +18,5 @@ public interface TeacherDao extends UserBaseDao<Teacher>, JpaSpecificationExecut
     Teacher save(Teacher t);
     List<Teacher> findByAdmin(Admin admin);
     List<Teacher> findByCourses(Course course);
+    Optional<Teacher> findById(int id);
 }
