@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -36,7 +33,7 @@ public class Controller {
     private ExamService examService;
     @Autowired
     private QuestionService questionService;
-    private List<String> answers = new ArrayList<>();
+    private Map<Question, List<String>> answers = new HashMap<>();
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getHomePage() {
@@ -120,7 +117,7 @@ public class Controller {
                 return "error";
             }
         } catch (Exception e) {
-            model.addAttribute("errorMsg", "username or password is incorrect.");
+            model.addAttribute("errorMsg", e.getMessage());
             return ("error");
 
         }
@@ -140,7 +137,7 @@ public class Controller {
         try {
             if (admin.getAuthority().equals("admin")) {
                 admin.setEnabled(true);
-                adminService.registerNewAdmin(admin);
+                adminService.addNewAdmin(admin);
                 List<Student> students = new ArrayList<>();
                 List<Teacher> teachers = new ArrayList<>();
                 model.addAttribute("admin", admin);
@@ -148,9 +145,13 @@ public class Controller {
                 model.addAttribute("teachers", teachers);
                 return "welcome";
             } else if (admin.getAuthority().equals("teacher")) {
+                Teacher teacher = makeTeacherObjectByUser(admin);
+                teacherService.addNewTeacher(teacher);
                 model.addAttribute("errorMsg", "your account has not verified yet.");
                 return "error";
             } else {
+                Student student = makeStudentObjectByUser(admin);
+                studentService.addNewStudent(student);
                 model.addAttribute("errorMsg", "your account has not verified yet.");
                 return "error";
             }
@@ -160,16 +161,6 @@ public class Controller {
             return ("error");
         }
     }
-
-//    private Admin makeAdminObjectByUser(User user) {
-//        Admin admin = new Admin();
-//        admin.setEnabled(true);
-//        admin.setUsername(user.getUsername());
-//        admin.setFamily(user.getFamily());
-//        admin.setPassword(user.getPassword());
-//        admin.setName(user.getName());
-//        return admin;
-//    }
 
 
     private Student makeStudentObjectByUser(Admin user) throws Exception {
@@ -209,7 +200,7 @@ public class Controller {
                                 Model model) {
         try {
             student.setAdmin(adminUser);
-            studentService.registerNewStudent(student);
+            studentService.addNewStudent(student);
             model.addAttribute("students", studentService.showAllStudent(adminUser));
             model.addAttribute("teachers", teacherService.showAllTeachers(adminUser));
             return ("welcome");
@@ -238,7 +229,7 @@ public class Controller {
         try {
             teacher.setEnabled(true);
             teacher.setAdmin(adminUser);
-            teacherService.registerNewTeacher(teacher);
+            teacherService.addNewTeacher(teacher);
             model.addAttribute("students", studentService.showAllStudent(adminUser));
             model.addAttribute("teachers", teacherService.showAllTeachers(adminUser));
             return ("welcome");
@@ -675,7 +666,7 @@ public class Controller {
             Exam exam = examService.findById(examId);
             Teacher teacher = teacherService.findById(teacherId);
             List<Exam> exams = examService.showAllTeacherExams(teacher);
-            List<Question> questions = questionService.findByExam(exam);
+            Map<Question,List<String>> questions = questionService.findByExam(exam);
             model.addAttribute("questions", questions);
             model.addAttribute("exams", exams);
             model.addAttribute("id", teacherId);
@@ -690,21 +681,56 @@ public class Controller {
     public String showAddNewQuestionChoose(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId) {
         model.addAttribute("id", teacherId);
         model.addAttribute("examId", examId);
-        return "choose";
+        return "choose1";
+    }
+
+
+    @RequestMapping(value = "/addAQuestionChoose1", method = RequestMethod.GET)
+    public String showAddNewQuestionChoose1(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId,@RequestParam("ans") String ans) {
+        model.addAttribute("id", teacherId);
+        model.addAttribute("examId", examId);
+        if(ans.equals("n")){
+            return "choose";
+        }
+        else{
+            model.addAttribute("question",new Question());
+            return "searchQuestion";}
+    }
+    @RequestMapping(value = "/searchQuestionProcess", method = RequestMethod.POST)
+    public String addNewQuestionChoose1(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId,@ModelAttribute Question question) {
+        model.addAttribute("id", teacherId);
+        model.addAttribute("examId", examId);
+        Map<Question,List<String>> questions = questionService.findMaxMatch(question.getQuestion(), question.getTitle(), question.getEmbCl());
+        model.addAttribute("questions", questions);
+        return "questionSearch";
     }
 
     @RequestMapping(value = "/addAnswer", method = RequestMethod.GET)
-    public String addNewAnswerProcess(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId, @RequestParam("ans") String answer) {
+    public String addNewAnswerProcess(Model model, @RequestParam("id") int teacherId, @RequestParam("qid") int qid, @RequestParam("examId") int examId, @RequestParam("ans") String answer, @RequestParam("end") String end) {
 
-        answers.add(answer);
-        Question question = new Question();
-        question.setQuestionType(QuestionType.TEST);
-        model.addAttribute("question", question);
-        model.addAttribute("teacherId", teacherId);
-        model.addAttribute("examId", examId);
-        model.addAttribute("question", question);
-        model.addAttribute("classifications", classificationService.findAll());
-        return "addNewQuestion";
+        //answers.add(answer);
+        try {
+            Question question = questionService.addAnswer(qid, answer);
+            model.addAttribute("teacherId", teacherId);
+            model.addAttribute("examId", examId);
+            if (end.equals("y")) {
+                Teacher teacher = teacherService.findById(teacherId);
+                List<Exam> exams = examService.showAllTeacherExams(teacher);
+                model.addAttribute("exams", exams);
+                model.addAttribute("id", teacherId);
+                return ("myExams");
+            } else {
+                model.addAttribute("id", teacherId);
+                model.addAttribute("qid", qid);
+                model.addAttribute("examId", examId);
+                model.addAttribute("question", question);
+                return "addAnswers";
+            }
+
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
     }
 
     @RequestMapping(value = "/addAQuestion", method = RequestMethod.GET)
@@ -712,15 +738,15 @@ public class Controller {
         try {
             Question question = new Question();
             if (qt.equals("ex"))
-                question.setQuestionType(QuestionType.DESCRIPTIVE);
+                model.addAttribute("qt", "ex");
             else {
-                question.setQuestionType(QuestionType.TEST);
-                question.setAnswers(answers);
+                model.addAttribute("qt", "test");
             }
             model.addAttribute("teacherId", teacherId);
             model.addAttribute("examId", examId);
             model.addAttribute("question", question);
             model.addAttribute("classifications", classificationService.findAll());
+
             return ("addNewQuestion");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -730,9 +756,10 @@ public class Controller {
 
     @RequestMapping(value = "/addNewQuestionProcess", method = RequestMethod.POST)
     public String addNewExam(@Valid @ModelAttribute("question") Question question, BindingResult br, @RequestParam("id") int teacherId,
-                             @RequestParam("examId") int examId, Model model) {
+                             @RequestParam("examId") int examId, @RequestParam("qt") String qt, Model model) {
         try {
             if (br.hasErrors()) {
+                model.addAttribute("qt", qt);
                 model.addAttribute("question", question);
                 model.addAttribute("teacherId", teacherId);
                 model.addAttribute("examId", examId);
@@ -745,15 +772,59 @@ public class Controller {
             Classification classification = classificationService.findByValue(question.getEmbCl());
             question.setClassification(classification);
             question.setTeacher(teacher);
-            questionService.addAQuestion(question);
-            List<Exam> exams = examService.showAllTeacherExams(teacher);
-            question.setEmbCl("expm");
-            model.addAttribute("exams", exams);
+            if (qt.equals("test"))
+                question.setQuestionType(QuestionType.TEST);
+            else
+                question.setQuestionType(QuestionType.DESCRIPTIVE);
+            Question question1 = questionService.addAQuestion(question);
+            if (qt.equals("test")) {
+                answers.put(question1, new ArrayList<>());
+                model.addAttribute("examId", examId);
+                model.addAttribute("id", teacherId);
+                model.addAttribute("ans", "");
+                model.addAttribute("question", question1);
+                model.addAttribute("qid", question1.getId());
+                return "addAnswers";
+            } else {
+                List<Exam> exams = examService.showAllTeacherExams(teacher);
+                model.addAttribute("exams", exams);
+                model.addAttribute("id", teacherId);
+                return ("myExams");
+            }
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+    }
+    @RequestMapping(value = "/addQuestionFromBankProcess", method = RequestMethod.GET)
+    public String addNewQuestionFromBankProcess( @RequestParam("id") int teacherId,
+                             @RequestParam("examId") int examId, @RequestParam("qid") int questionId, Model model) {
+        try{
+            Teacher teacher = teacherService.findById(teacherId);
+            Exam exam = examService.findById(examId);
+            Question question=questionService.findById(questionId);
+            questionService.addAQuestionFromBank(question,exam);
+                List<Exam> exams = examService.showAllTeacherExams(teacher);
+                model.addAttribute("exams", exams);
+                model.addAttribute("id", teacherId);
+                return ("myExams");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return ("error");
+        }
+    }
+
+    @RequestMapping(value = "/examStudent", method = RequestMethod.GET)
+    public String showExamStudents(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId) {
+        try {
+            Exam exam = examService.findById(examId);
+            List<Student> students = studentService.showAllStudentsExams(exam);
+            model.addAttribute("students", students);
             model.addAttribute("id", teacherId);
             return ("myExams");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
-            return ("error");
+            return "error";
         }
     }
 //    Teacher teacher=teacherService.findById(teacherId);

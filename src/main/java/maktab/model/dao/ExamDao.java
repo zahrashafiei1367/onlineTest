@@ -2,6 +2,7 @@ package maktab.model.dao;
 
 import maktab.model.entity.Course;
 import maktab.model.entity.Exam;
+import maktab.model.entity.Student;
 import maktab.model.entity.Teacher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

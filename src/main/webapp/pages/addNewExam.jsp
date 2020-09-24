@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
+            background-image: url("/images/background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment:local;
@@ -67,12 +67,12 @@
 <body>
 <div>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
-    <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a><br/>
-    <label><b>Course Title:${course.title}</b></label><br/>
+    <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a><br/><br/>
+    <label style="font-size: larger"><b>Course Title:${course.title}</b></label><br/><br/>
     <form:form modelAttribute="exam" name="myForm" action="addNewExamProcess?id=${id}&courseNumber=${course.number}"  method="POST">
-        <label><b>Exam Title</b></label><br/>
+        <label><b>Exam Title:</b></label><br/>
         <form:input path="title" type="text" placeholder="Enter Exam Title"/><form:errors path="title" cssClass="error"/><br/>
-        <label><b>Exam explanation</b></label><br/>
+        <label><b>Exam explanation:</b></label><br/>
         <form:input path="explanation" type="text" placeholder="Enter Exam Explanation"/><form:errors path="explanation" cssClass="error"/><br/>
         <label><b>Exam Starts at:</b></label><br/>
         <form:input path="theBeginning" type="text" placeholder="yyyy/mm/dd"/><form:errors path="theBeginning" cssClass="error"/><br/>

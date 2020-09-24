@@ -112,4 +112,18 @@ public class Exam {
     public void setExplanation(String explanation) {
         this.explanation = explanation;
     }
+
+    @Override
+    public String toString() {
+        return "Exam{" +
+                "id=" + id +
+                ", course=" + course.toString() +
+                ", teacher=" + teacher.toString() +
+                ", timer='" + timer + '\'' +
+                ", theBeginning='" + theBeginning + '\'' +
+                ", theEnd='" + theEnd + '\'' +
+                ", title='" + title + '\'' +
+                ", explanation='" + explanation + '\'' +
+                '}';
+    }
 }

@@ -11,7 +11,7 @@
         body {
             alignment: left;
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
+            background-image: url("/images/background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment: local;
@@ -89,30 +89,19 @@
 </table>
 <br/>
 <c:if test="${questions != null}">
-    <table>
-            <th>title</th>
-            <th>question</th>
-            <th>correct answer</th>
+    <c:set var="count" value="0" scope="page" />
         <c:forEach var="q" items="${questions}">
+            <c:set var="count" value="${count + 1}" scope="page"/>
+            <p>${count}-${q.key.question}</p>
+            <c:forEach var="answer" items="${q.value}" >
+                <p>
+                <ul class="fa-ul"><li><span class="fa-li"><i class="fas fa-square"></i></span></li></ul></p><p style="margin-left: 35px">${answer}</p>
+            </c:forEach>
+                    </c:forEach>
+                </c:if>
 
-            <tr>
-                <td>${q.title}</td>
-                <td>${q.question}</td>
-                <td>${q.correctAnswer}</td>
-            </tr>
-<%--                <c:if test="${q.embCl==test}">--%>
-<%--                    <c:forEach var="ans" items="${q.answers}">--%>
-<%--                        <tr>--%>
-<%--                            <td class="aligner"><ul class="fa-ul"><li><span class="fa-li"><i class="fas fa-square"></i></span></li></ul></td>--%>
-<%--                            <td>${ans}</td>--%>
-<%--                        </tr>--%>
-<%--                    </c:forEach>--%>
-<%--                </c:if>--%>
-
-        </c:forEach>
-    </table>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose?id=${id}&examId=${examId}">Add A Question</a>
-</c:if>
+
 <c:if test="${students != null}">
     <table>
         <tr>

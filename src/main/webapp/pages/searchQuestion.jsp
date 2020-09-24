@@ -61,20 +61,14 @@
 <body>
 <div>
 
-    <form:form modelAttribute="user" name="myForm" action="searchProcess?adminId=${admin.id}"  method="POST">
-
-        <label><b>Username</b></label><br/>
-        <form:input path="username" name="un" type="text"/><br/>
-        <label><b>name</b></label><br/>
-        <form:input path="name" name="un" type="text"/><br/>
-        <label><b>family</b></label><br/>
-        <form:input path="family" name="un" type="text"/><br/>
-        Search between: teachers<form:radiobutton path="authority" value="teacher"/>
-        Students <form:radiobutton path="authority" value="student"/><br/>
+    <form:form modelAttribute="question" name="myForm" action="searchQuestionProcess?id=${id}&examId=${examId}"  method="POST">
+        <label><b>Question</b></label><br/>
+        <form:input path="question" name="un" type="text"/><br/>
+        <label><b>title</b></label><br/>
+        <form:input path="title" name="un" type="text"/><br/>
+        <label><b>classification</b></label><br/>
+        <form:input path="embCl" name="un" type="text"/><br/>
         <button type="submit">search</button><br/>
-    </form:form>
-    <form:form modelAttribute="admin" >
-        <form:hidden path="id" value="${admin.id}"></form:hidden>
     </form:form>
 </div>
 </body>

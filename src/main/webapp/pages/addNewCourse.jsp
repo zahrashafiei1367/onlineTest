@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
+            background-image: url("/images/background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment: local;

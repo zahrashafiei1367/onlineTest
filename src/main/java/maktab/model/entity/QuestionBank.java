@@ -88,4 +88,17 @@ public class QuestionBank {
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
+
+    @Override
+    public String toString() {
+        return "QuestionBank{" +
+                "id=" + id +
+                ", question='" + question + '\'' +
+                ", questionType=" + questionType +
+                ", correctAnswer='" + correctAnswer + '\'' +
+                ", title='" + title + '\'' +
+                ", classification=" + classification +
+                ", teacher=" + teacher.getName() +
+                '}';
+    }
 }

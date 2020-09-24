@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -9,7 +10,7 @@
         body {
             alignment: left;
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
+            background-image: url("/images/background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment:local;

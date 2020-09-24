@@ -1,5 +1,6 @@
 package maktab.service;
 
+import maktab.aspect.log;
 import maktab.model.dao.TeacherDao;
 import maktab.model.dao.TeacherSpecification;
 import maktab.model.entity.Admin;
@@ -17,26 +18,29 @@ import java.util.Optional;
 public class TeacherService {
     @Autowired
     private TeacherDao teacherDao;
-
     @Transactional
-    public void registerNewTeacher(Teacher teacher) throws Exception {
+    public void addNewTeacher(Teacher teacher) throws Exception {
         Optional<Teacher> found = teacherDao.findByUsername(teacher.getUsername());
         if (!found.isPresent()) {
             teacherDao.save(teacher);
         } else
             throw new Exception("account with this email is exist!");
     }
-
+    @log
     @Transactional
     public Teacher findByUsernameAndPassword(String username, String password) throws Exception {
         Optional<Teacher> found = teacherDao.findByUsername(username);
         if (found.isPresent()) {
             found = teacherDao.findByUsernameAndPassword(username, password);
-            if (found.isPresent())
+            if (found.isPresent()){
                 return found.get();
-            else
-                throw new Exception("password is not correct.");
-        } else throw new Exception("username does not exist");
+            }
+            else{
+                throw new Exception("password is not correct.");}
+        } else{
+            throw new Exception("username does not exist");
+        }
+
     }
 
     @Transactional(readOnly = true)

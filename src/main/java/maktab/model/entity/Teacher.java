@@ -64,4 +64,13 @@ public class Teacher extends User {
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
     }
+
+    @Override
+    public String toString() {
+        return "Teacher{" +
+                "courses=" + courses +
+                ", admin=" + admin.toString() +
+                ", hasCourse=" + hasCourse +
+                "} " + super.toString();
+    }
 }

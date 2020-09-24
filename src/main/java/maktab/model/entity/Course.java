@@ -153,5 +153,18 @@ public class Course {
         return Objects.hash(getTitle(), getId(), getNumber(), getCaption(), getAdmin(), getTheBeginning(), getTheEnd());
     }
 
-
+    @Override
+    public String toString() {
+        return "Course{" +
+                "title='" + title + '\'' +
+                ", id=" + id +
+                ", number=" + number +
+                ", caption='" + caption + '\'' +
+                ", classification=" + classification +
+                ", embeddableClassification='" + embeddableClassification + '\'' +
+                ", admin=" + admin.toString() +
+                ", theBeginning='" + theBeginning + '\'' +
+                ", theEnd='" + theEnd + '\'' +
+                '}';
+    }
 }

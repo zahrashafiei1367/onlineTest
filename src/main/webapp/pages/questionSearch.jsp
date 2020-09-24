@@ -22,27 +22,14 @@
         }
 
 
-        div {
-            position: absolute;
-            top: 90%;
-            width: 100%;
-            text-align:left;
-            padding: 14px 0px;
-            margin: 8px 0;
-            border: none;
-            cursor: pointer;
-            min-width: fit-content;
-            border-radius: 12px;
-        }
-
         button {
             background-color: blue;
             color: white;
-            padding: 10px 20px;
+            padding: 14px 20px;
             margin: 8px 0;
             border: none;
             cursor: pointer;
-            width: 70px;
+            width: 200px;
             border-radius: 12px;
         }
 
@@ -54,37 +41,51 @@
             border: 1px solid black;
         }
 
-        .error {
-            font-size: small;
-            color: red
+        td.m, tr.m {
+            border: hidden;
         }
 
+        td.aligner {
+            display: flex;
+            align-items: center;
+        }
 
 
         /* Change styles for span and cancel button on extra small screens */
 
     </style>
+    <script>
+        function setClassfication(){
+            var ele = document.getElementsByName('rad');
+            for( i=0;i<ele.length;i++) {
+                if (ele[i].checked) {
+                    var x=ele[i].value;
+                    document.getElementById("a").href = 'http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addQuestionFromBankProcess?id=${id}&examId=${examId}&qid='+x;
+                    return true;
+                }
+
+            }
+
+        }
+    </script>
 </head>
 <body>
 <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
-<a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/welcome?id=${adminId}">Welcome Page</a>
-<table id="demo" class="main">
-    <tr>
-        <th>Classification</th>
-        <th>Edit</th>
-    </tr>
-    <c:forEach var="cls" items="${classifications}">
-        <tr>
-            <td>${cls.value}</td>
-        </tr>
+<a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a>
+<br/>
+<c:if test="${questions != null}">
+    <c:set var="count" value="0" scope="page" />
+    <c:forEach var="q" items="${questions}">
+        <c:set var="count" value="${count + 1}" scope="page"/>
+
+        <label>${count}-${q.key.question}</label><input type="radio" name="rad" value="${q.key.id}"/><br/>
+        <c:forEach var="answer" items="${q.value}" >
+            <p>
+            <ul class="fa-ul"><li><span class="fa-li"><i class="fas fa-square"></i></span></li></ul></p><p style="margin-left: 35px">${answer}</p>
+        </c:forEach>
     </c:forEach>
-    <div>
-   <form:form modelAttribute="classification" action="addClassificationsProcess?id=${adminId}"  method="POST">
-       <form:input path="value" id="value" style="width : 100px"/>
-       <button type="submit">Submit</button><form:errors path="value" cssClass="error"/><br/>
-   </form:form>
-    </div>
-</table>
+</c:if>
+<a href="" id="a" onclick="return setClassfication()">Add</a>
 </body>
 </html>
 

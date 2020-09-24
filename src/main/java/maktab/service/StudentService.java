@@ -1,9 +1,11 @@
 package maktab.service;
 
+import maktab.aspect.log;
 import maktab.model.dao.StudentDao;
 import maktab.model.dao.StudentSpecifications;
 import maktab.model.entity.Admin;
 import maktab.model.entity.Course;
+import maktab.model.entity.Exam;
 import maktab.model.entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class StudentService {
     @Autowired
     private StudentDao studentDao;
 
-
+    @log
     @Transactional
     public Student findByUsernameAndPassword(String username, String password) throws Exception {
         Optional<Student> found = studentDao.findByUsername(username);
@@ -38,7 +40,7 @@ public class StudentService {
 
 
     @Transactional
-    public void registerNewStudent(Student student) throws Exception {
+    public void addNewStudent(Student student) throws Exception {
         Optional<Student> found = studentDao.findByUsername(student.getUsername());
         if (!found.isPresent()) {
             studentDao.save(student);
@@ -89,14 +91,14 @@ public class StudentService {
             courses.remove(course);
         else
             courses.add(course);
-//        for (Course course1 : courses) {
-//            if (course1.getId() == course.getId()) {
-//                courses.remove(course1);
-//                return true;
-//            }
-//        }
-//        courses.add(course);
-//        return false;
+
+    }
+    @Transactional
+    public List<Student> showAllStudentsExams(Exam exam) {
+        Course course = exam.getCourse();
+        Admin admin = course.getAdmin();
+        return showAllStudentsHasCourse(admin,course);
+
     }
 
 

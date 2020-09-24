@@ -59,4 +59,11 @@ public class Question extends QuestionBank{
     public void setEmbCl(String embCl) {
         this.embCl = embCl;
     }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "addToQuestionBank=" + addToQuestionBank +
+                "} " + super.toString();
+    }
 }

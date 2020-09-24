@@ -2,6 +2,7 @@ package maktab.model.dao;
 
 import maktab.model.entity.Admin;
 import maktab.model.entity.Course;
+import maktab.model.entity.Exam;
 import maktab.model.entity.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,5 @@ import java.util.Optional;
 public interface StudentDao extends UserBaseDao<Student>, JpaSpecificationExecutor<Student>  {
    Student save(Student s);
     List<Student> findByAdmin(Admin admin);
-    List<Student> findByCourses(Course course);
     Optional<Student> findById(int id);
 }

@@ -7,10 +7,12 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("/images/background.jpg");
+            /*background-image: url("http://myfirstpageza.gigfa.com//background.jpg");*/
+            background-image: url("images/background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment:local;
@@ -25,7 +27,7 @@
 
         }
 
-        input[type=text], input[type=password] {
+        input[type=text] {
             width: 250px;
             padding: 12px 20px;
             margin: 8px 0;
@@ -46,20 +48,28 @@
 
         }
 
+        .button {
+            background-color: blue;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 250px;
+
+        }
+
+        .button:hover {
+            opacity: 0.8;
+        }
+
         button:hover {
             opacity: 0.8;
         }
-        div{
+        div {
             text-align: left;
         }
-        h{
-            color: red;
-        }
-        .error {
-            font-size: small;
-            color: red
-        }
-
 
         /* Change styles for span and cancel button on extra small screens */
 
@@ -67,33 +77,32 @@
 </head>
 <body>
 <script>
+    function myFunction1(){
+        x=document.getElementById('a').value;
+        y=document.getElementById('b');
+        y.href='http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAnswer?id=${id}&examId=${examId}&qid=${qid}&ans='+x+'&end=n';
+    }
+    function myFunction2(){
+        x=document.getElementById('a').value;
+        y=document.getElementById('c');
+        y.href='http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAnswer?id=${id}&examId=${examId}&qid=${qid}&ans='+x+'&end=y';
+    }
 </script>
 <div>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/">Home</a>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/backTWelcome?id=${id}">Welcome Page</a>
     <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/myExams?id=${id}">My Exams</a><br/>
     <br/>
-    <form:form modelAttribute="question" name="myForm" action="addNewQuestionProcess?id=${teacherId}&examId=${examId}&qt=${qt}"  method="POST">
-        <label><b>Title:</b></label><br/>
-        <form:input path="title" type="text" placeholder="title should be short"/><form:errors path="title" cssClass="error"/><br/>
-        <label><b>Question:</b></label><br/>
-        <form:input path="question" type="text" placeholder="Enter question"/><form:errors path="question" cssClass="error"/><br/>
-        <label><b>Answer:</b></label><br/>
-        <form:input path="correctAnswer" type="text" placeholder="Enter correct answer"/></br>
-        <label><b>Classification:</b></label>
-        <c:forEach var="cls" items="${classifications}" >
-            <tr>
-                <td>${cls.value}</td>
-                <td><form:radiobutton path="embCl" name="r2" value="${cls.value}" checked="checked"/></td>
-            </tr>
+
+        <label>${question.question}</label>
+        <c:forEach var="answer" items="${question.answers}" >
+            <p>
+            <ul class="fa-ul"><li><span class="fa-li"><i class="fas fa-square"></i></span></li></ul></p><p style="margin-left: 35px">${answer}</p>
         </c:forEach>
         <br/>
-        <lable style="font-size: smaller">Do You want to add your Question To The Question Bank: Yes</lable><form:radiobutton path="addToQuestionBank" name="r3" value="true"/>
-        <lable style="font-size: smaller">No</lable> <form:radiobutton path="addToQuestionBank" name="r3" value="false"/>
-    <br/><form:button type="submit">Add Question</form:button><br/>
-    </form:form>
-
+        <input type="text" id="a"/>
+        <a href="" id="b"onclick="myFunction1()" class="button">add answer</a>
+    <a href="" id="c"onclick="myFunction2()" class="button">finish</a></br>
 </div>
 </body>
 </html>
-

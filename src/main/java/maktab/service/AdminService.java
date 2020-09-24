@@ -1,5 +1,6 @@
 package maktab.service;
 
+import maktab.aspect.log;
 import maktab.model.dao.AdminDao;
 import maktab.model.entity.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class AdminService {
     private AdminDao adminDao;
 
     @Transactional
-    public void registerNewAdmin(Admin admin) throws Exception {
+    public void addNewAdmin(Admin admin) throws Exception {
         Optional<Admin> found = adminDao.findByUsername(admin.getUsername());
         if (!found.isPresent()) {
             found = adminDao.findBySchoolName(admin.getSchoolName());
@@ -25,7 +26,7 @@ public class AdminService {
         } else
             throw new Exception("account with this email is exist!");
     }
-
+    @log
     @Transactional
     public Admin findByUsernameAndPassword(String username, String password) throws Exception {
         Optional<Admin> found = adminDao.findByUsername(username);

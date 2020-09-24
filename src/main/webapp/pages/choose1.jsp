@@ -67,11 +67,11 @@
 </head>
 <body>
 <div>
-<tr><label class="lableAdmin" style="text-decoration-style: solid;color: blue;">Do you want to make a test question?</label></tr>
-<tr>
-    <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestion?id=${id}&examId=${examId}&qt=test" class="submitAdmin" >yes</a></td>
-    <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestion?id=${id}&examId=${examId}&qt=ex" class="submitAdmin">no</a></td>
-</tr>
+    <tr><label class="lableAdmin" style="text-decoration-style: solid;color: blue;">Do you want to add A question from question bank?</label></tr>
+    <tr>
+        <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose1?id=${id}&examId=${examId}&ans=y" class="submitAdmin" >yes</a></td>
+        <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose1?id=${id}&examId=${examId}&ans=n" class="submitAdmin">no</a></td>
+    </tr>
 </div>
 </body>
 </html>

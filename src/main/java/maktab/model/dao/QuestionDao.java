@@ -12,4 +12,5 @@ public interface QuestionDao extends Repository<Question, Integer>, JpaSpecifica
     Question save(Question q);
     List<Question> findByExam(Exam exam);
     Optional<Question> findById(int id);
+
 }
