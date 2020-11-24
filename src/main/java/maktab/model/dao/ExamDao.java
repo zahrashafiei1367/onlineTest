@@ -16,4 +16,5 @@ public interface ExamDao extends Repository<Exam, Integer>, JpaSpecificationExec
     List<Exam> findByCourse(Course course);
     List<Exam> findByTeacher(Teacher teacher);
     Optional<Exam> findById(int id);
+    void deleteById(int id);
 }

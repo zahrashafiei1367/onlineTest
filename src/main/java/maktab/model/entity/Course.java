@@ -14,8 +14,8 @@ public class Course {
     private int id;
     @NotNull(message="*number should be filled.only with digits")
     private int number;
-    @Pattern(regexp = "^[a-zA-Z]+$" , message="*caption should be filled.only with a to z and At o Z")
-    private String caption;
+    @NotNull(message="title should be filled")
+    private String title;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "classification_id")
     private Classification classification;
@@ -41,14 +41,6 @@ public class Course {
 
     public void setEmbeddableClassification(String embeddableClassification) {
         this.embeddableClassification = embeddableClassification;
-    }
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
     }
 
     public int getNumber() {
@@ -143,14 +135,13 @@ public class Course {
         return getId() == course1.getId() &&
                 getNumber() == course1.getNumber() &&
                 getTitle().equals(course1.getTitle()) &&
-                getCaption().equals(course1.getCaption()) &&
                 getTheBeginning().equals(course1.getTheBeginning()) &&
                 getTheEnd().equals(course1.getTheEnd());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTitle(), getId(), getNumber(), getCaption(), getAdmin(), getTheBeginning(), getTheEnd());
+        return Objects.hash(getTitle(), getId(), getNumber(), getAdmin(), getTheBeginning(), getTheEnd());
     }
 
     @Override
@@ -159,7 +150,6 @@ public class Course {
                 "title='" + title + '\'' +
                 ", id=" + id +
                 ", number=" + number +
-                ", caption='" + caption + '\'' +
                 ", classification=" + classification +
                 ", embeddableClassification='" + embeddableClassification + '\'' +
                 ", admin=" + admin.toString() +

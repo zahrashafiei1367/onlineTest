@@ -11,7 +11,8 @@
         body {
             alignment: left;
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("/images/background.jpg");
+            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
+            /*background-image: url("/images/background.jpg");*/
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment: local;
@@ -65,25 +66,31 @@
         <th>Exam finish At:</th>
         <th>Timer</th>
         <th>Questions</th>
-        <th>Add A Question</th>
         <th>Students take part:</th>
         <th>Result:</th>
-        <th>Edit</th>
-        <th>Delete</th>
     </tr>
     <c:forEach var="crs" items="${exams}">
         <tr>
             <td>${crs.course.title}</td>
             <td>${crs.theBeginning}</td>
             <td>${crs.theEnd}</td>
-            <td>${crs.timer}</td>
-            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examQuestion?id=${id}&examId=${crs.id}">Questions</a></td>
-            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose?id=${id}&examId=${crs.id}">Add A Question</a></td>
+            <td>${crs.examDuration}</td>
+            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examQuestion?id=${id}&examId=${crs.id}">Questions</a>
+            <a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/addAQuestionChoose?id=${id}&examId=${crs.id}">
+                            <i class="fas fa-plus" style="size: 1"/>
+            </a></td>
             <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examStudent?id=${id}&examId=${crs.id}">Students</a></td>
             <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examResult?id=${id}&examId=${crs.id}">Results</a></td>
-            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examEdit?id=${id}&examId=${crs.id}">Edit</a></td>
-            <td><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examDelete?id=${id}&examId=${crs.id}">Delete</a></td>
+            <td style="border: hidden"><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examEdit?id=${id}&examId=${crs.id}">
+                <i class="fas fa-edit"></i>
 
+            </a></td>
+            <td style="border: hidden"><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examDelete?id=${id}&examId=${crs.id}">
+                <i class="fa fa-trash" style="aria-hiddenn :false"></i>
+            </a></td>
+            <td style="border: hidden"><a href="http://localhost:8080/CreatingAndHoldingOnlineTests_war_exploded/examStop?id=${id}&examId=${crs.id}">
+                <i class="fas fa-stop"></i>
+            </a></td>
         </tr>
     </c:forEach>
 </table>

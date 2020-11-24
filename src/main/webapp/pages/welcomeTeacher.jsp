@@ -11,7 +11,8 @@
         body {
             alignment: left;
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("/images/background.jpg");
+            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
+            /*background-image: url("/images/background.jpg");*/
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment: local;
@@ -78,17 +79,18 @@
 </table>
 <br/>
     <c:if test="${exams != null}">
+        <lable>Course: ${courseName}</lable><br/>
     <table>
         <tr>
             <th>teacher name</th>
-            <th>timer</th>
+            <th>exam duration</th>
             <th>the date of starting</th>
             <th>date of end</th>
         </tr>
         <c:forEach var="exam" items="${exams}">
             <tr>
                 <td>${exam.teacher.name}</td>
-                <td>${exam.timer}</td>
+                <td>${exam.examDuration}</td>
                 <td>${exam.theBeginning}</td>
                 <td>${exam.theEnd}</td>
             </tr>
@@ -96,6 +98,7 @@
     </table>
     </c:if>
     <c:if test="${students != null}">
+        <lable>Course: ${courseName}</lable><br/>
     <table>
         <tr>
             <th>Student name</th>
@@ -112,6 +115,7 @@
     </table>
     </c:if>
     <c:if test="${teachers} != null}">
+        <lable>Course: ${courseName}</lable><br/>
     <table>
         <tr>
             <th>teacher name</th>

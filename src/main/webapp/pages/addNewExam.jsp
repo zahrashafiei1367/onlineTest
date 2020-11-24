@@ -9,7 +9,8 @@
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-image: url("/images/background.jpg");
+            /*background-image: url("/images/background.jpg");*/
+            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment:local;
@@ -79,7 +80,7 @@
         <label><b>Exam Ends At:</b></label><br/>
         <form:input path="theEnd" name="un" type="text"  placeholder="yyyy/mm/dd"/><form:errors path="theEnd" cssClass="error"/><br/>
         <label><b>timer:</b></label><br/>
-        <form:input path="timer" type="text" placeholder="hh:mm:ss"/><form:errors path="timer" cssClass="error"/><br/>
+        <form:input path="examDuration" type="text" placeholder="hh:mm:ss"/><form:errors path="examDuration" cssClass="error"/><br/>
         <p class="error" >${errorMsg}</p><br/>
         <button type="submit">Add</button><br/>
     </form:form>

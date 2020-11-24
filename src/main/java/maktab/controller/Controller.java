@@ -68,7 +68,6 @@ public class Controller {
                              Model model) {
         try {
             //Page<Student> students = studentService.showAllStudent(0,2);
-
             Admin admin = adminService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
             model.addAttribute("students", studentService.showAllStudent(admin));
             model.addAttribute("teachers", teacherService.showAllTeachers(admin));
@@ -87,8 +86,7 @@ public class Controller {
     }
 
     @RequestMapping(value = "/signInProcess2", method = RequestMethod.POST)
-    public String signInStudentOrTeacher(@ModelAttribute("user") User user,
-                                         Model model) {
+    public String signInStudentOrTeacher(@ModelAttribute("user") User user, Model model) {
         try {
             if (user.getAuthority().equals("teacher")) {
                 Teacher teacher = teacherService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
@@ -117,7 +115,7 @@ public class Controller {
                 return "error";
             }
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("" + "errorMsg", e.getMessage());
             return ("error");
 
         }
@@ -538,6 +536,7 @@ public class Controller {
             model.addAttribute("id", teacherId);
             model.addAttribute("courseNumber", courseNumber);
             model.addAttribute("courses", courses);
+            model.addAttribute("courseName",course.getTitle());
             return ("welcomeTeacher");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -556,6 +555,7 @@ public class Controller {
             model.addAttribute("id", teacherId);
             model.addAttribute("courseNumber", courseNumber);
             model.addAttribute("courses", courses);
+            model.addAttribute("courseName",course.getTitle());
             return ("welcomeTeacher");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -570,10 +570,11 @@ public class Controller {
             List<Course> courses = teacher.getCourses();
             Course course = courseService.findByNumber(courseNumber);
             List<Teacher> teachers = teacherService.showAllTeachersHasCourse(teacher.getAdmin(), course);
-            model.addAttribute("students", teachers);
+            model.addAttribute("teachers", teachers);
             model.addAttribute("id", teacherId);
             model.addAttribute("courseNumber", courseNumber);
             model.addAttribute("courses", courses);
+            model.addAttribute("courseName",course.getTitle());
             return ("welcomeTeacher");
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
@@ -827,10 +828,25 @@ public class Controller {
             return "error";
         }
     }
-//    Teacher teacher=teacherService.findById(teacherId);
-//    Course course = courseService.findByNumber(courseId);
-//    Exam exam=examService.findById(examId);
-    //examStudent?id=${id}&examId=${crs.id}
+
+    @RequestMapping(value = "/examDelete", method = RequestMethod.GET)
+    public String deleteExam(Model model, @RequestParam("id") int teacherId, @RequestParam("examId") int examId) {
+        try {
+            Exam exam = examService.findById(examId);
+            Map<Question,List<String>> questions=questionService.findByExam(exam);
+
+            //List<Result> results=resultService.findByExam(exam);
+            model.addAttribute("students", students);
+            model.addAttribute("id", teacherId);
+            return ("myExams");
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error";
+        }
+    }
+
+
+//toDo
     //examResult?id=${id}&examId=${crs.id}
     //examEdit?id=${id}&examId=${crs.id}
     //examDelete?id=${id}&courseId=${crs.id}

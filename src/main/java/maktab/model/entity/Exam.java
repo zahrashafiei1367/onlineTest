@@ -1,5 +1,7 @@
 package maktab.model.entity;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -18,7 +20,7 @@ public class Exam {
     @OneToMany(mappedBy = "exam")
     private List<Question> questions;
     @Pattern(regexp="^([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:hh:mm:ss")
-    private String timer;
+    private String examDuration;
     @Pattern(regexp="^[0-2]{1}[0-9]{3}/(0?[1-9]|1[0-2])/([0]?[1-9]|[1-2]?[1-9]|3?[0-1]) ([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:yy/MM/dd hh:mm:ss")
     private String theBeginning;
     @Pattern(regexp="^[0-2]{1}[0-9]{3}/(0?[1-9]|1[0-2])/([0]?[1-9]|[1-2]?[1-9]|3?[0-1]) ([0-1]?[0-9]|[2]?[0-4]):[0-5][0-9]:[0-5][0-9]$",message="please match the format:yy/MM/dd hh:mm:ss")
@@ -29,8 +31,11 @@ public class Exam {
     private String title;
     @NotNull( message = "*explanation should be filled.")
     private String explanation;
+    @Value(value = "false")
+    private Boolean isStopped;
 
     public Exam() {
+
     }
 
     public int getId() {
@@ -65,12 +70,12 @@ public class Exam {
         this.questions = questions;
     }
 
-    public String getTimer() {
-        return timer;
+    public String getExamDuration() {
+        return examDuration;
     }
 
-    public void setTimer(String timer) {
-        this.timer = timer;
+    public void setExamDuration(String examDuration) {
+        this.examDuration = examDuration;
     }
 
     public String getTheBeginning() {
@@ -113,13 +118,21 @@ public class Exam {
         this.explanation = explanation;
     }
 
+    public Boolean getStopped() {
+        return isStopped;
+    }
+
+    public void setStopped(Boolean stopped) {
+        isStopped = stopped;
+    }
+
     @Override
     public String toString() {
         return "Exam{" +
                 "id=" + id +
-                ", course=" + course.toString() +
-                ", teacher=" + teacher.toString() +
-                ", timer='" + timer + '\'' +
+                ", course=" + course.getTitle() +
+                ", teacher=" + teacher.getUsername() +
+                ", exam duration='" + examDuration + '\'' +
                 ", theBeginning='" + theBeginning + '\'' +
                 ", theEnd='" + theEnd + '\'' +
                 ", title='" + title + '\'' +

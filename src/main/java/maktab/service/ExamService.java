@@ -32,6 +32,7 @@ public class ExamService {
         return examDao.findByTeacher(teacher);
     }
 
+    @Transactional
     public Exam findById(int id) throws Exception {
         Optional<Exam> found=examDao.findById(id);
         if (found.isPresent()) {
@@ -40,4 +41,9 @@ public class ExamService {
             throw new Exception("exam with this id is not exist!");
     }
 
+    @Transactional
+    public void deleteById(int id) throws Exception {
+        Exam exam = findById(id);
+        examDao.deleteById(id);
+    }
 }

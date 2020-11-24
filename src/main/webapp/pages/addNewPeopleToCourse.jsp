@@ -12,7 +12,8 @@
         body {
             alignment: left;
             font-family: Arial, Helvetica, sans-serif;
-            bbackground-image: url("/images/background.jpg");
+            /*bbackground-image: url("/images/background.jpg");*/
+            background-image: url("http://myfirstpageza.gigfa.com//background.jpg");
             background-repeat: no-repeat;
             background-clip: border-box;
             background-attachment: local;
